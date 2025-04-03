@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_dashboard.OdooDashboard" owl="1">
+        <div class="vh-100 overflow-auto bg-muted">
+            <div class="col-lg-12">
+                <!-- HEADER SECTION -->
+                <div class="row mx-0">
+                    <div class="col m-0 p-0">
+                        <div class="shadow-sm border p-4 bg-white">
+                            <div class="d-flex align-items-center justify-content-between p-1">
+                                <h1 class="text-dark fw-bolder">Welcome 👋</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- KPI CARDS SECTION -->
+
+                <!-- CHARTS SECTION -->
+
+                <!-- TABLES SECTION -->
+
+            </div>
+        </div>
+    </t>
+</templates>

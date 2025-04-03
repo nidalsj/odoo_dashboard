@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Dashboard Owl Action -->
+    <record id="odoo_dashboard_action" model="ir.actions.client">
+        <field name="name">ODOO Dashboard</field>
+        <field name="tag">odoo_dashboard</field>
+    </record>
+
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_odoo_dashboard"
+        name="Dashboard"
+        action="odoo_dashboard_action"
+        web_icon="odoo_dashboard,static/description/icon.png"
+    />
+
+</odoo>
