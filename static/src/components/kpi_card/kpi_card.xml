@@ -1,0 +1,21 @@
+<templates>
+    <t t-name="odoo_dashboard.KpiCard" owl="1">
+        <div class="col-lg-3 m-0 p-0">
+            <div t-att-class="'d-flex align-items-center rounded shadow-sm m-2 p-4 ' + props.bgColor + ' ' + props.textColor" style="cursor: pointer;">
+                
+                <div class="me-4" style="font-size: 25px;">
+                    <i t-att-class="props.icon + ' fa-2x'"></i>
+                </div>
+
+                <div>
+                    <div class="fw-bold" style="font-size: 30px;">
+                        <span t-esc="props.value"/>
+                    </div>
+                    <div style="font-size: 20px;">
+                        <span t-esc="props.name"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

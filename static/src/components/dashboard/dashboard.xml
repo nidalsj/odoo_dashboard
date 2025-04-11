@@ -8,12 +8,20 @@
                     <div class="col m-0 p-0">
                         <div class="shadow-sm border p-4 bg-white">
                             <div class="d-flex align-items-center justify-content-between p-1">
-                                <h1 class="text-dark fw-bolder">Welcome 👋</h1>
+                                <h1 class="text-muted fw-bolder"><t t-esc="state.user"/>👋</h1>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- KPI CARDS SECTION -->
+                <div class="col m-0 p-0">
+                    <div class="row m-2">
+                        <KpiCard name="'Total Sales'" icon="'fa fa-usd'" value="'50'" bgColor="'bg-white'" textColor="'text-danger'" />
+                        <KpiCard name="'New Customers'" icon="'fa fa-user-plus'" value="state.new_customers.value" bgColor="'bg-white'" textColor="'text-info'" />
+                        <KpiCard name="'Customers Today'" icon="'fa fa-user-plus'" value="'50'" bgColor="'bg-white'" textColor="'text-warning'" />
+                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="'50'" bgColor="'bg-white'" textColor="'text-success'" />
+                    </div>
+                </div>
 
                 <!-- CHARTS SECTION -->
 
