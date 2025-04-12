@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="dashboard_date_filter_list" model="ir.ui.view">
+        <field name="name">dashboard.date.filter.list</field>
+        <field name="model">dashboard.date.filter</field>
+        <field name="arch" type="xml">
+            <list string="Dashboard Date Filter">
+                <field name="filter_name" />
+                <field name="filter_days" />
+
+            </list>
+        </field>
+    </record>
+
+    <record id="dashboard_date_filter_form" model="ir.ui.view">
+        <field name="name">dashboard.date.filter.form</field>
+        <field name="model">dashboard.date.filter</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard Date Filter">
+                <sheet>
+                    <group>
+                        <field name="filter_name" />
+                        <field name="filter_days" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="dashboard_date_filter_action" model="ir.actions.act_window">
+        <field name="name">Dashboard Date Filter</field>
+        <field name="res_model">dashboard.date.filter</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="dashboard_date_filters_menu"
+        name="Customize Date Filter"
+        action="dashboard_date_filter_action"
+        parent="odoo_dashboard.menu_odoo_dashboard"
+        sequence="1"/>
+
+</odoo>

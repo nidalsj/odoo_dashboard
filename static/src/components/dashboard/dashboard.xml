@@ -9,6 +9,23 @@
                         <div class="shadow-sm border p-4 bg-white">
                             <div class="d-flex align-items-center justify-content-between p-1">
                                 <h1 class="text-muted fw-bolder"><t t-esc="state.user"/>👋</h1>
+                                <div>
+                                    <!-- DATE FILTER -->
+                                    <Dropdown>
+                                        <button class="btn btn-secondary d-flex align-items-center gap-2 px-3 py-2" style="cursor: pointer !important;">
+                                            <i class="fa fa-calendar me-2"></i>
+                                            <t t-esc="state.selectedFilterName or 'Select Period'"/>
+                                            <i class="fa fa-caret-down ms-2"></i>
+                                        </button>
+                                        <t t-set-slot="content">
+                                            <t t-foreach="state.dateFilters" t-as="filter" t-key="filter.id">
+                                                <DropdownItem class="'o_menu_item'" onSelected="() => this.onSelectFilter(filter)">
+                                                    <t t-esc="filter.filter_name"/>
+                                                </DropdownItem>
+                                            </t>
+                                        </t>
+                                    </Dropdown>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -16,10 +33,10 @@
                 <!-- KPI CARDS SECTION -->
                 <div class="col m-0 p-0">
                     <div class="row m-2">
-                        <KpiCard name="'Total Sales'" icon="'fa fa-usd'" value="'50'" bgColor="'bg-white'" textColor="'text-danger'" />
-                        <KpiCard name="'New Customers'" icon="'fa fa-user-plus'" value="state.new_customers.value" bgColor="'bg-white'" textColor="'text-info'" />
-                        <KpiCard name="'Customers Today'" icon="'fa fa-user-plus'" value="'50'" bgColor="'bg-white'" textColor="'text-warning'" />
-                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="'50'" bgColor="'bg-white'" textColor="'text-success'" />
+                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.total_sales.value" bgColor="'bg-white'" textColor="'text-danger'" />
+                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.total_purchases.value" bgColor="'bg-white'" textColor="'text-info'" />
+                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.total_customers.value" bgColor="'bg-white'" textColor="'text-primary'" />
+                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.sale_orders_today.value" bgColor="'bg-white'" textColor="'text-success'" />
                     </div>
                 </div>
 

@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_dashboard_handler,dashboard.handler,model_dashboard_handler,base.group_user,1,1,1,1
+access_dashboard_date_filter,dashboard.date.filter,model_dashboard_date_filter,base.group_user,1,1,1,1

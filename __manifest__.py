@@ -8,6 +8,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/dashboard_views.xml',
+        'views/date_filter.xml',
     ],
     'assets': {
         'web.assets_backend': [
