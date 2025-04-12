@@ -8,7 +8,7 @@
                     <div class="col m-0 p-0">
                         <div class="shadow-sm border p-4 bg-white">
                             <div class="d-flex align-items-center justify-content-between p-1">
-                                <h1 class="text-muted fw-bolder"><t t-esc="state.user"/>👋</h1>
+                                <h1 class="text-muted fw-bold"><t t-esc="state.user"/>👋</h1>
                                 <div>
                                     <!-- DATE FILTER -->
                                     <Dropdown>
@@ -33,15 +33,74 @@
                 <!-- KPI CARDS SECTION -->
                 <div class="col m-0 p-0">
                     <div class="row m-2">
-                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.total_sales.value" bgColor="'bg-white'" textColor="'text-danger'" />
-                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.total_purchases.value" bgColor="'bg-white'" textColor="'text-info'" />
-                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.total_customers.value" bgColor="'bg-white'" textColor="'text-primary'" />
-                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.sale_orders_today.value" bgColor="'bg-white'" textColor="'text-success'" />
+                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.total_sales.value" bgColor="'bg-danger'" textColor="'text-white'" />
+                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.total_purchases.value" bgColor="'bg-info'" textColor="'text-white'" />
+                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.total_customers.value" bgColor="'bg-primary'" textColor="'text-white'" />
+                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.sale_orders_today.value" bgColor="'bg-success'" textColor="'text-white'" />
                     </div>
                 </div>
-
                 <!-- CHARTS SECTION -->
-
+                <div class="row m-2">
+                    <div class="col-lg-6 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h3 class="text-dark fw-bold">Deliveries Today</h3>
+                            </div>
+                            <ChartLoader 
+                                type="'bar'" 
+                                title="'Deliveries'" 
+                                axis="'y'"
+                                labels="state.deliveryTodayChart.labels"
+                                data="state.deliveryTodayChart.values"
+                                datasetLabel="'Deliveries'"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h3 class="text-dark fw-bold">Monthly Sale Order Report</h3>
+                            </div>
+                            <ChartLoader 
+                                type="'bar'" 
+                                title="'Order Report'" 
+                                axis="'x'"
+                                labels="state.saleMonthlyChart.labels"
+                                data="state.saleMonthlyChart.values"
+                                datasetLabel="'Orders'"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h3 class="text-dark fw-bold">Top 20 Products</h3>
+                            </div>
+                            <ChartLoader 
+                                type="'doughnut'" 
+                                title="'Package'"
+                                labels="state.topProductsChart.labels"
+                                data="state.topProductsChart.values"
+                                datasetLabel="'Orders'"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h3 class="text-dark fw-bold">Top Customers</h3>
+                            </div>
+                            <ChartLoader 
+                                type="'bar'" 
+                                title="'Plan Choice Analysis'" 
+                                axis="'y'"
+                                labels="state.topCustomersChart.labels"
+                                data="state.topCustomersChart.values"
+                                datasetLabel="'Amount'"
+                            />
+                        </div>
+                    </div>
+                </div>
                 <!-- TABLES SECTION -->
 
             </div>
