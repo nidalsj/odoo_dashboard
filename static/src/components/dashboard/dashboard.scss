@@ -1,0 +1,36 @@
+.table-container {
+    position: relative;
+    max-height: 550px;
+    overflow: hidden;
+}
+
+.table-header, .table-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 40px; /* same structure */
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-header {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+    font-weight: bold;
+    padding: 8px;
+}
+
+.table-body {
+    max-height: 500px;
+    overflow-y: auto;
+    display: block;
+    padding: 8px;
+}
+
+.table-cell {
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

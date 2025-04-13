@@ -2,11 +2,20 @@ from odoo import models, fields, api, _
 from odoo.tools import date_utils
 from datetime import date, datetime, timedelta
 from odoo.tools import format_amount
+from odoo.http import request
 
 
 class DashboardHandler(models.Model):
     _name = "dashboard.handler"
     _description = "Prepare Data for Dashboard"
+
+    # Function to pass active session info without inheriting ir.http model
+    def get_active_session_info(self):
+        user = request.env.user.name
+
+        return {
+            'user': user,
+        }
 
     def get_dashboard_kpi_card_data(self):
         currency = self.env.company.currency_id
@@ -44,7 +53,7 @@ class DashboardHandler(models.Model):
             'sales_orders_today': sale_orders_today,
         }
     
-    def get_delivery_state_counts(self, target_date=None):
+    def get_deliveries_today_chart_data(self, target_date=None):
         """Returns a grouped count of deliveries by status for today"""
         target_date = target_date or date.today().strftime('%Y-%m-%d')
         status_mapping = dict(self.env["stock.picking"]._fields["state"].selection)
@@ -67,7 +76,7 @@ class DashboardHandler(models.Model):
             'values': list(data.values())
         }
 
-    def get_sale_orders_counts(self, target_date=None):
+    def get_monthly_sales_chart_data(self, target_date=None):
         """Sale orders per month for current year"""
         current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
         start_date = date(current_date.year, 1, 1)
@@ -90,7 +99,7 @@ class DashboardHandler(models.Model):
 
         return {'labels': labels, 'values': values}
     
-    def get_top_products_by_sales(self, target_date=None):
+    def get_top_products_chart_data(self, target_date=None):
         """Returns top 20 products by number of confirmed sale orders"""
         current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
         start_date = date(current_date.year, 1, 1)
@@ -117,8 +126,8 @@ class DashboardHandler(models.Model):
 
         return {'labels': labels, 'values': values}
     
-    def get_top_customers_by_sales(self, target_date=None, limit=20):
-        """Returns top 20 customers and their total confirmed sales in the current year."""
+    def get_top_customers_chart_data(self, target_date=None, limit=20):
+        """Returns top 20 customers and their total confirmed sales in the current year"""
         current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
         start_date = date(current_date.year, 1, 1)
         end_date = date(current_date.year, 12, 31)
@@ -144,27 +153,51 @@ class DashboardHandler(models.Model):
 
         return {'labels': labels, 'values': raw_values}
     
+    def get_employees_with_birthdays_this_month(self):
+        """Employees whose birthdays are between today and the end of this month"""
+        today = date.today()
+        current_month = today.strftime('%m')
+        current_day = today.strftime('%d')
+
+        query = """
+            SELECT id, name AS display_name, birthday
+            FROM hr_employee
+            WHERE birthday IS NOT NULL
+            AND TO_CHAR(birthday, 'MM') = %s
+            AND TO_CHAR(birthday, 'DD') >= %s
+            ORDER BY TO_CHAR(birthday, 'MM-DD')
+        """
+        self.env.cr.execute(query, (current_month, current_day))
+        result = self.env.cr.dictfetchall()
+
+        for row in result:
+            if row['birthday']:
+                row['birthday'] = row['birthday'].strftime('%b %d, %Y')
+
+        return result
+    
     def get_dashboard_chart_loader_data(self, target_date=None):
         """Preparing Data for all four charts"""
         target_date = target_date or date.today().strftime('%Y-%m-%d')
         chart_loader_data = {}
 
-        delivery_status_count = self.get_delivery_state_counts(target_date)
+        delivery_status_count = self.get_deliveries_today_chart_data(target_date)
         chart_loader_data['delivery_labels'] = delivery_status_count['labels']
         chart_loader_data['delivery_values'] = delivery_status_count['values']
 
-        sale_order_count = self.get_sale_orders_counts(target_date)
+        sale_order_count = self.get_monthly_sales_chart_data(target_date)
         chart_loader_data['order_labels'] = sale_order_count['labels']
         chart_loader_data['order_values'] = sale_order_count['values']
 
-        top_products_count = self.get_top_products_by_sales(target_date)
+        top_products_count = self.get_top_products_chart_data(target_date)
         chart_loader_data['products_labels'] = top_products_count['labels']
         chart_loader_data['products_values'] = top_products_count['values']
 
-        top_customers_amounts = self.get_top_customers_by_sales(target_date)
+        top_customers_amounts = self.get_top_customers_chart_data(target_date)
         chart_loader_data['customers_labels'] = top_customers_amounts['labels']
         chart_loader_data['customers_values'] = top_customers_amounts['values']
 
+        chart_loader_data['employee_birthdays'] = self.get_employees_with_birthdays_this_month()
 
         return chart_loader_data
     

@@ -8,7 +8,7 @@
                     <div class="col m-0 p-0">
                         <div class="shadow-sm border p-4 bg-white">
                             <div class="d-flex align-items-center justify-content-between p-1">
-                                <h1 class="text-muted fw-bold"><t t-esc="state.user"/>👋</h1>
+                                <h1 class="text-dark fw-bold">Welcome <span class="text-muted"><t t-esc="state.user"/></span> 👋</h1>
                                 <div>
                                     <!-- DATE FILTER -->
                                     <Dropdown>
@@ -102,7 +102,132 @@
                     </div>
                 </div>
                 <!-- TABLES SECTION -->
-
+                <div class="row m-2">
+                    <div class="col-lg-6 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 550px;">
+                            <div class="m-3">
+                                <h3>Upcoming Employee Birthdays 🎉</h3>
+                            </div>
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Employeee Name</div>
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Date of Birth</div>
+                                    <div class="table-cell" style="width: 40px;"></div>
+                                </div>
+                                <div class="table-body">
+                                    <t t-if="state.employeeBirthdays">
+                                        <t t-foreach="state.employeeBirthdays" t-as="birthday" t-key="birthday.id">
+                                            <div class="table-row">
+                                                <div class="table-cell text-nowrap">
+                                                    <t t-esc="birthday.display_name" />
+                                                </div>
+                                                <div class="table-cell text-nowrap">
+                                                    <t t-esc="birthday.birthday" />
+                                                </div>
+                                                <div class="table-cell">
+                                                    <i 
+                                                        class="fa fa-pencil" 
+                                                        style="cursor: pointer;" 
+                                                    />
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 550px;">
+                            <div class="m-3">
+                                <h3>Salesperson Incentives</h3>
+                            </div>
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Display Name</div>
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Rating</div>
+                                    <div class="table-cell" style="width: 40px;"></div>
+                                </div>
+                                <div class="table-body">
+                                    <div class="table-row">
+                                        <div class="table-cell text-nowrap">
+                                            name
+                                        </div>
+                                        <div class="table-cell text-nowrap">
+                                            value
+                                        </div>
+                                        <div class="table-cell">
+                                            <i 
+                                                class="fa fa-pencil" 
+                                                style="cursor: pointer;" 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 550px;">
+                            <div class="m-3">
+                                <h3>Low Stock / Re-Order Alerts</h3>
+                            </div>
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Display Name</div>
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Rating</div>
+                                    <div class="table-cell" style="width: 40px;"></div>
+                                </div>
+                                <div class="table-body">
+                                    <div class="table-row">
+                                        <div class="table-cell text-nowrap">
+                                            name
+                                        </div>
+                                        <div class="table-cell text-nowrap">
+                                            value
+                                        </div>
+                                        <div class="table-cell">
+                                            <i 
+                                                class="fa fa-pencil" 
+                                                style="cursor: pointer;" 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 m-0 p-0">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 550px;">
+                            <div class="m-3">
+                                <h3>Payments Report</h3>
+                            </div>
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Display Name</div>
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Rating</div>
+                                    <div class="table-cell" style="width: 40px;"></div>
+                                </div>
+                                <div class="table-body">
+                                    <div class="table-row">
+                                        <div class="table-cell text-nowrap">
+                                            name
+                                        </div>
+                                        <div class="table-cell text-nowrap">
+                                            value
+                                        </div>
+                                        <div class="table-cell">
+                                            <i 
+                                                class="fa fa-pencil" 
+                                                style="cursor: pointer;" 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </t>

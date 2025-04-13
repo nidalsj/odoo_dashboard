@@ -2,7 +2,6 @@
 import { registry } from '@web/core/registry';
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
-import { session } from "@web/session";
 import { KpiCard } from '../kpi_card/kpi_card';
 import { loadJS } from "@web/core/assets"
 import { Dropdown } from "@web/core/dropdown/dropdown";
@@ -26,24 +25,29 @@ export class OdooDashboard extends Component {
             saleMonthlyChart: {labels: [], values: []},
             topProductsChart: {labels: [], values: []},
             topCustomersChart: {labels: [], values: []},
-            customerBirthdays: [],
+            employeeBirthdays: [],
             paymentReport: [],
-            user: session.partner_display_name,
-
-        });
+        })
 
         onWillStart(async ()=>{
             await loadJS("https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js");
-            await this.fetchDateFilters()
+            await this.getDateFilters()
+            await this.getActiveSessionInfo()
         })
 
         onMounted(() => {
             this.getKpiCardData()
             this.getChartLoaderData()
+            this.getTableData()
         })
     }
 
-    async fetchDateFilters() {
+    async getActiveSessionInfo(){
+        const sessionInfo = await this.orm.call("dashboard.handler", "get_active_session_info", [{}]);
+        this.state.user = sessionInfo['user']
+    }
+
+    async getDateFilters() {
         const filters = await this.orm.searchRead("dashboard.date.filter", [], ["filter_name", "filter_days"]);
         this.state.dateFilters = filters;
     }
@@ -75,18 +79,24 @@ export class OdooDashboard extends Component {
     }
 
     async getChartLoaderData(){
-        const ChartLoaderData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
-        this.state.deliveryTodayChart.labels = ChartLoaderData.delivery_labels
-        this.state.deliveryTodayChart.values = ChartLoaderData.delivery_values
+        const chartLoaderData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
+        this.state.deliveryTodayChart.labels = chartLoaderData.delivery_labels
+        this.state.deliveryTodayChart.values = chartLoaderData.delivery_values
 
-        this.state.saleMonthlyChart.labels = ChartLoaderData.order_labels
-        this.state.saleMonthlyChart.values = ChartLoaderData.order_values
+        this.state.saleMonthlyChart.labels = chartLoaderData.order_labels
+        this.state.saleMonthlyChart.values = chartLoaderData.order_values
 
-        this.state.topProductsChart.labels = ChartLoaderData.products_labels
-        this.state.topProductsChart.values = ChartLoaderData.products_values
+        this.state.topProductsChart.labels = chartLoaderData.products_labels
+        this.state.topProductsChart.values = chartLoaderData.products_values
 
-        this.state.topCustomersChart.labels = ChartLoaderData.customers_labels
-        this.state.topCustomersChart.values = ChartLoaderData.customers_values
+        this.state.topCustomersChart.labels = chartLoaderData.customers_labels
+        this.state.topCustomersChart.values = chartLoaderData.customers_values
+    }
+
+    async getTableData(){
+        const tableData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
+        this.state.employeeBirthdays = tableData.employee_birthdays
+
     }
 
 }
