@@ -1,36 +1,39 @@
 .table-container {
-    position: relative;
-    max-height: 550px;
+    flex: 1 1 auto;
     overflow: hidden;
-}
-
-.table-header, .table-row {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .table-header,
+  .table-row {
     display: grid;
-    grid-template-columns: 2fr 2fr 40px; /* same structure */
+    grid-template-columns: 2fr 2fr 40px; // same colums style
     align-items: center;
     border-bottom: 1px solid #dee2e6;
-}
-
-.table-header {
+  }
+  
+  .table-header {
     position: sticky;
     top: 0;
     background-color: #f8f9fa;
     z-index: 10;
     font-weight: bold;
     padding: 8px;
-}
-
-.table-body {
-    max-height: 500px;
+  }
+  
+  .table-body {
     overflow-y: auto;
     display: block;
     padding: 8px;
-}
-
-.table-cell {
+    flex: 1 1 auto;
+  }
+  
+  .table-cell {
     padding: 8px;
     text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
+  }
+  
