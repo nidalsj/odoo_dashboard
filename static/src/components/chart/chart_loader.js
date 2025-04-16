@@ -16,16 +16,24 @@ export class ChartLoader extends Component {
         // Rerender chart when props change
         useEffect(() => {
             if (this.chartInstance) {
-            this.chartInstance.destroy()
+                this.chartInstance.destroy()
             }
             this.renderChart(); // Re-render chart with new data
         }, () => [this.props.labels, this.props.data, this.props.datasetLabel])
+    }
+
+    getDynamicColors(count) {
+        if (this.props.color?.length) return this.props.color;
+        return Array.from({ length: count }, (_, i) =>
+            `hsl(${Math.round((360 / count) * i)}, 70%, 60%)`
+        );
     }
 
     renderChart() {
         if (this.Chart) {
             this.chartInstance.destroy()
         }
+        let backgroundColors = this.getDynamicColors(this.props.labels.length);
         let showLegend = this.props.type === "doughnut";
         this.chartInstance = new Chart(this.chartRef.el,
             {
@@ -36,6 +44,7 @@ export class ChartLoader extends Component {
                         {
                             label: this.props.datasetLabel || "Label Unavailable",
                             data: this.props.data || [],
+                            backgroundColor: backgroundColors,
                             hoverOffset: 4
                         }
                     ]
