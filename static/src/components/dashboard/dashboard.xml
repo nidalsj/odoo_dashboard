@@ -172,9 +172,9 @@
                                 </button>
                             </div>
                             <div class="table-container" style="overflow-y: auto;">
-                                <table class="table table-striped table-hover border mb-0">
-                                    <tbody>
-                                        <t t-if="state.taskList.length">
+                                <t t-if="state.taskList.length">
+                                    <table class="table table-striped table-hover border mb-0 w-100">
+                                        <tbody>
                                             <tr t-foreach="state.taskList" t-as="task" t-key="task.id">
                                                 <td>
                                                     <div class="form-check">
@@ -186,24 +186,22 @@
                                                 </td>
                                                 <td style="text-align: right;">
                                                     <i class="fa fa-pencil me-4" style="cursor: pointer;" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#addtaskModal" 
-                                                    t-on-click="()=>this.editTask(task)"/>
-
+                                                       data-bs-toggle="modal" 
+                                                       data-bs-target="#addtaskModal" 
+                                                       t-on-click="()=>this.editTask(task)"/>
+                            
                                                     <i class="fa fa-trash" style="cursor: pointer;" 
-                                                    t-on-click="()=>this.deleteTask(task)"/>
+                                                       t-on-click="()=>this.deleteTask(task)"/>
                                                 </td>
                                             </tr>
-                                        </t>
-                                        <t t-else="">
-                                            <tr>
-                                                <td colspan="2" class="text-center text-danger py-4" style="font-size: 1rem; font-weight: bolder;">
-                                                    <i class="fa fa-info-circle me-2"></i> No tasks available.
-                                                </td>
-                                            </tr>
-                                        </t>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-center text-danger" style="font-size: 1rem; font-weight: bold;">
+                                        <i class="fa fa-info-circle me-2"></i> No tasks available.
+                                    </div>
+                                </t>
                             </div>
                         </div>
                         <t t-call="odoo_dashboard.add_task_modal"/>
