@@ -28,7 +28,7 @@ export class OdooDashboard extends Component {
             topProductsChart: {labels: [], values: []},
             topCustomersChart: {labels: [], values: []},
             employeeBirthdays: [],
-            paymentReport: [],
+            paymentsSummary: [],
             stockReport: [],
             task:{name:"", completed:false},
             taskList:[],
@@ -108,7 +108,7 @@ export class OdooDashboard extends Component {
     async getTableData(){
         const tableData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
         this.state.employeeBirthdays = tableData.employee_birthdays
-
+        this.state.paymentsSummary = tableData.payments_summary
     }
 
     // ************************

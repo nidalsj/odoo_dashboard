@@ -210,31 +210,36 @@
                         </div>
                     </div>
                     <div class="col-lg-6 m-0 p-0">
-                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 550px;">
+                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 300px;">
                             <div class="m-3">
-                                <h3>Payments Report</h3>
+                                <h3>Invoice Payment Summary (All Companies)</h3>
                             </div>
                             <div class="table-container">
                                 <div class="table-header">
-                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Display Name</div>
-                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Rating</div>
-                                    <div class="table-cell" style="width: 40px;"></div>
+                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Status</div>
+                                    <div class="table-cell text-nowrap" style="font-weight: bold; text-align: right;">Amount</div>
                                 </div>
                                 <div class="table-body">
-                                    <div class="table-row">
-                                        <div class="table-cell text-nowrap">
-                                            name
+                                    <t t-if="state.paymentsSummary">
+                                        <div class="table-row">
+                                            <div class="table-cell text-nowrap">Total Invoiced</div>
+                                            <div class="table-cell text-nowrap" style="text-align: right;">
+                                                <t t-esc="state.paymentsSummary.total_invoiced"/>
+                                            </div>
                                         </div>
-                                        <div class="table-cell text-nowrap">
-                                            value
+                                        <div class="table-row">
+                                            <div class="table-cell text-nowrap">Total Paid</div>
+                                            <div class="table-cell text-nowrap" style="text-align: right;">
+                                                <t t-esc="state.paymentsSummary.total_paid"/>
+                                            </div>
                                         </div>
-                                        <div class="table-cell">
-                                            <i 
-                                                class="fa fa-pencil" 
-                                                style="cursor: pointer;" 
-                                            />
+                                        <div class="table-row">
+                                            <div class="table-cell text-nowrap">Total Pending</div>
+                                            <div class="table-cell text-nowrap" style="text-align: right;">
+                                                <t t-esc="state.paymentsSummary.total_pending"/>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </t>
                                 </div>
                             </div>
                         </div>
