@@ -45,6 +45,11 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Deliveries Today</h3>
+                                <t t-if="!state.deliveryTodayChart.values.length">
+                                    <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
+                                        <i class="fa fa-info-circle me-2" />No records available
+                                    </span>
+                                </t>
                             </div>
                             <ChartLoader 
                                 type="'bar'" 
@@ -61,6 +66,11 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Monthly Sale Order Report</h3>
+                                <t t-if="!state.saleMonthlyChart.values.length">
+                                    <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
+                                        <i class="fa fa-info-circle me-2" />No records available
+                                    </span>
+                                </t>
                             </div>
                             <ChartLoader 
                                 type="'bar'" 
@@ -77,6 +87,11 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Top 20 Products</h3>
+                                <t t-if="!state.topProductsChart.values.length">
+                                    <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
+                                        <i class="fa fa-info-circle me-2" />No records available
+                                    </span>
+                                </t>
                             </div>
                             <ChartLoader 
                                 type="'doughnut'" 
@@ -91,6 +106,11 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Top Customers</h3>
+                                <t t-if="!state.topCustomersChart.values.length">
+                                    <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
+                                        <i class="fa fa-info-circle me-2" />No records available
+                                    </span>
+                                </t>
                             </div>
                             <ChartLoader 
                                 type="'bar'" 
@@ -154,25 +174,34 @@
                             <div class="table-container" style="overflow-y: auto;">
                                 <table class="table table-striped table-hover border mb-0">
                                     <tbody>
-                                        <tr t-foreach="state.taskList" t-as="task" t-key="task.id">
-                                            <td>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" t-att-id="task.id" t-att-checked="task.completed" t-on-click="(e)=>this.toggleTask(e,task)"/>
-                                                    <label class="form-check-label" t-att-for="task.id" t-attf-class="#{task.completed and 'text-decoration-line-through'}">
-                                                        <span t-esc="task.name"/>
-                                                    </label>
-                                                </div>
-                                            </td>
-                                            <td style="text-align: right;">
-                                                <i class="fa fa-pencil me-4" style="cursor: pointer;" 
-                                                   data-bs-toggle="modal" 
-                                                   data-bs-target="#addtaskModal" 
-                                                   t-on-click="()=>this.editTask(task)"/>
+                                        <t t-if="state.taskList.length">
+                                            <tr t-foreach="state.taskList" t-as="task" t-key="task.id">
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" t-att-id="task.id" t-att-checked="task.completed" t-on-click="(e)=>this.toggleTask(e,task)"/>
+                                                        <label class="form-check-label" t-att-for="task.id" t-attf-class="#{task.completed and 'text-decoration-line-through'}">
+                                                            <span t-esc="task.name"/>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    <i class="fa fa-pencil me-4" style="cursor: pointer;" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#addtaskModal" 
+                                                    t-on-click="()=>this.editTask(task)"/>
 
-                                                <i class="fa fa-trash" style="cursor: pointer;" 
-                                                   t-on-click="()=>this.deleteTask(task)"/>
-                                            </td>
-                                        </tr>
+                                                    <i class="fa fa-trash" style="cursor: pointer;" 
+                                                    t-on-click="()=>this.deleteTask(task)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-else="">
+                                            <tr>
+                                                <td colspan="2" class="text-center text-danger py-4" style="font-size: 1rem; font-weight: bolder;">
+                                                    <i class="fa fa-info-circle me-2"></i> No tasks available.
+                                                </td>
+                                            </tr>
+                                        </t>
                                     </tbody>
                                 </table>
                             </div>
