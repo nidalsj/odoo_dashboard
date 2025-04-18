@@ -86,7 +86,7 @@
                     <div class="col-lg-4 m-0 p-0">
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
-                                <h3 class="text-dark fw-bold">Top 20 Products</h3>
+                                <h3 class="text-dark fw-bold">Top Products</h3>
                                 <t t-if="!state.topProductsChart.values.length">
                                     <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
                                         <i class="fa fa-info-circle me-2" />No records available
