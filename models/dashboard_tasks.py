@@ -1,7 +1,7 @@
 from odoo import fields, models, api
 
 
-class OwlTodo(models.Model):
+class DashboardTasks(models.Model):
     _name = 'dashboard.tasks'
     _description = 'Dashboard Tasks'
 

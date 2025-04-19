@@ -7,11 +7,27 @@
         <field name="tag">odoo_dashboard</field>
     </record>
 
-    <!-- Dashboard Menu -->
+    <!-- Dashboard Menu Items -->
     <menuitem id="menu_odoo_dashboard"
         name="Dashboard"
         action="odoo_dashboard_action"
         web_icon="odoo_dashboard,static/description/icon.png"
+    />
+
+    <menuitem
+        id="dashboard_date_filters_menu"
+        name="Customize Date Filter"
+        action="dashboard_date_filter_action"
+        parent="odoo_dashboard.menu_odoo_dashboard"
+        sequence="1"
+    />
+
+    <menuitem
+        id="dashboard_config_menu"
+        name="Settings"
+        action="odoo_dashboard.dashboard_config_action"
+        parent="odoo_dashboard.menu_odoo_dashboard"
+        sequence="1"
     />
 
 </odoo>

@@ -50,12 +50,4 @@
         <field name="context">{'module' : 'odoo_dashboard', 'bin_size': False}</field>
     </record>
 
-    <menuitem
-        id="dashboard_config_menu"
-        name="Settings"
-        action="odoo_dashboard.dashboard_config_action"
-        parent="odoo_dashboard.menu_odoo_dashboard"
-        sequence="1"
-    />
-
 </odoo>

@@ -34,11 +34,4 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem
-        id="dashboard_date_filters_menu"
-        name="Customize Date Filter"
-        action="dashboard_date_filter_action"
-        parent="odoo_dashboard.menu_odoo_dashboard"
-        sequence="1"/>
-
 </odoo>

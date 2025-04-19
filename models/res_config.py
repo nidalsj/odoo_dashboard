@@ -8,12 +8,10 @@ class ResConfigSettings(models.TransientModel):
     total_purchases_card_color = fields.Char('Total Purchases Card Color')
     total_customers_card_color = fields.Char('Total Customers Card Color')
     sales_today_card_color = fields.Char('Sales Today Card Color')
-
     total_sales_text_color = fields.Char('Total Sales Text Color')
     total_purchases_text_color = fields.Char('Total Purchases Text Color')
     total_customers_text_color = fields.Char('Total Customers Text Color')
     sales_today_text_color = fields.Char('Sales Today Text Color')
-
     delivery_chart_color = fields.Char('Delivery Chart Color')
     sale_orders_chart_color = fields.Char('Sale Order Chart Color')
     top_products_chart_color = fields.Char('Top Products Chart Color')
