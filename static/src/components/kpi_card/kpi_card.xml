@@ -1,7 +1,9 @@
 <templates>
     <t t-name="odoo_dashboard.KpiCard" owl="1">
         <div class="col-lg-3 m-0 p-0">
-            <div t-att-class="'d-flex align-items-center rounded shadow-sm m-2 p-4 ' + props.bgColor + ' ' + props.textColor" style="cursor: pointer;">
+            <div
+                class="d-flex align-items-center rounded shadow-sm m-2 p-4" 
+                t-att-style="'cursor: pointer; background-color: ' + props.bg_color + '; color: ' + props.text_color + ';'" >
                 
                 <div class="me-4" style="font-size: 25px;">
                     <i t-att-class="props.icon + ' fa-2x'"></i>

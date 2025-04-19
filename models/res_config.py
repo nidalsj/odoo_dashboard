@@ -14,7 +14,6 @@ class ResConfigSettings(models.TransientModel):
     sales_today_text_color = fields.Char('Sales Today Text Color')
     delivery_chart_color = fields.Char('Delivery Chart Color')
     sale_orders_chart_color = fields.Char('Sale Order Chart Color')
-    top_products_chart_color = fields.Char('Top Products Chart Color')
     top_customers_chart_color = fields.Char('Top Customers Chart Color')
 
     def set_values(self):
@@ -23,7 +22,7 @@ class ResConfigSettings(models.TransientModel):
         color_fields = [
             'total_sales_card_color', 'total_purchases_card_color', 'total_customers_card_color', 'sales_today_card_color',
             'total_sales_text_color', 'total_purchases_text_color', 'total_customers_text_color', 'sales_today_text_color',
-            'delivery_chart_color', 'sale_orders_chart_color', 'top_products_chart_color', 'top_customers_chart_color'
+            'delivery_chart_color', 'sale_orders_chart_color', 'top_customers_chart_color'
         ]
         for field in color_fields:
             params.set_param(f'dashboard_settings.{field}', getattr(self, field) or '')
@@ -35,8 +34,20 @@ class ResConfigSettings(models.TransientModel):
         color_fields = [
             'total_sales_card_color', 'total_purchases_card_color', 'total_customers_card_color', 'sales_today_card_color',
             'total_sales_text_color', 'total_purchases_text_color', 'total_customers_text_color', 'sales_today_text_color',
-            'delivery_chart_color', 'sale_orders_chart_color', 'top_products_chart_color', 'top_customers_chart_color'
+            'delivery_chart_color', 'sale_orders_chart_color', 'top_customers_chart_color'
         ]
         for field in color_fields:
             res[field] = params.get_param(f'dashboard_settings.{field}', default='')
         return res
+
+    def reset_dashboard_colors(self):
+        param_model = self.env['ir.config_parameter'].sudo()
+        color_fields = [
+            'total_sales_card_color', 'total_purchases_card_color', 'total_customers_card_color', 'sales_today_card_color',
+            'total_sales_text_color', 'total_purchases_text_color', 'total_customers_text_color', 'sales_today_text_color',
+            'delivery_chart_color', 'sale_orders_chart_color', 'top_customers_chart_color'
+        ]
+        
+        for field in color_fields:
+            self[field] = False
+            param_model.set_param(f'dashboard_settings.{field}', '')

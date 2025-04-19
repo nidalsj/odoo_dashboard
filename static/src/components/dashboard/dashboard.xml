@@ -33,10 +33,10 @@
                 <!-- KPI CARDS SECTION -->
                 <div class="col m-0 p-0">
                     <div class="row m-2">
-                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.total_sales.value" bgColor="'bg-danger'" textColor="'text-white'" />
-                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.total_purchases.value" bgColor="'bg-info'" textColor="'text-white'" />
-                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.total_customers.value" bgColor="'bg-primary'" textColor="'text-white'" />
-                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.sale_orders_today.value" bgColor="'bg-success'" textColor="'text-white'" />
+                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.total_sales.value" bg_color="state.total_sales.bg_color" text_color="state.total_sales.text_color" />
+                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.total_purchases.value" bg_color="state.total_purchases.bg_color" text_color="state.total_purchases.text_color" />
+                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.total_customers.value" bg_color="state.total_customers.bg_color" text_color="state.total_customers.text_color" />
+                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.sale_orders_today.value" bg_color="state.sale_orders_today.bg_color" text_color="state.sale_orders_today.text_color" />
                     </div>
                 </div>
                 <!-- CHARTS SECTION -->

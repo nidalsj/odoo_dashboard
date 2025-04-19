@@ -10,6 +10,11 @@
             <xpath expr="//form" position="inside">
                 <app data-string="Dashboard" string="Dashboard" name="odoo_dashboard">
                     <block title="Dashboard KPI Cards" name="dashboard_cards_settings_container">
+                        <button name="reset_dashboard_colors"
+                            string="Use Default Colors"
+                            type="object"
+                            class="btn btn-secondary mb-2"
+                        />
                         <setting id="cards_color_settings" string="Dashboard Cards Background Colors">
                             <group>
                                 <field name="total_customers_card_color" widget="color"/>
@@ -32,7 +37,6 @@
                             <group>
                                 <field name="delivery_chart_color" widget="color"/>
                                 <field name="sale_orders_chart_color" widget="color"/>
-                                <field name="top_products_chart_color" widget="color"/>
                                 <field name="top_customers_chart_color" widget="color"/>
                             </group>
                         </setting>

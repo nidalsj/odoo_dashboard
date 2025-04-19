@@ -19,14 +19,19 @@ export class OdooDashboard extends Component {
         this.searchInput = useRef("search-input")
         this.state = useState({
             period: 0,
-            total_customers: {value:0},
-            total_sales: {value:0},
-            total_purchases: {value:0},
-            sale_orders_today: {value:0},
+            total_sales: {value:0, bg_color: "", text_color: ""},
+            total_purchases: {value:0, bg_color: "", text_color: ""},
+            total_customers: {value:0, bg_color: "", text_color: ""},
+            sale_orders_today: {value:0, bg_color: "", text_color: ""},
             deliveryTodayChart: {labels: [], values: []},
             saleMonthlyChart: {labels: [], values: []},
             topProductsChart: {labels: [], values: []},
             topCustomersChart: {labels: [], values: []},
+            chartColors: {
+                delivery_chart: "",
+                order_chart: "",
+                customer_chart: "",
+            },
             employeeBirthdays: [],
             paymentsSummary: [],
             stockReport: [],
@@ -41,6 +46,7 @@ export class OdooDashboard extends Component {
             await this.getDateFilters()
             await this.getActiveSessionInfo()
             await this.getAllTasks()
+            await this.loadCustomColors()
         })
 
         onMounted(() => {
@@ -50,10 +56,66 @@ export class OdooDashboard extends Component {
         })
     }
 
+    // *********************************
+    // FETCHING DASHBOARD CONFIGURATIONS
+    // *********************************
+
     async getActiveSessionInfo(){
         const sessionInfo = await this.orm.call("dashboard.handler", "get_active_session_info", [{}]);
         this.state.user = sessionInfo['user']
     }
+
+    async loadCustomColors() {
+        const keys = [
+            "total_sales_card_color", "total_sales_text_color",
+            "total_purchases_card_color", "total_purchases_text_color",
+            "total_customers_card_color", "total_customers_text_color",
+            "sales_today_card_color", "sales_today_text_color",
+            "delivery_chart_color", "sale_orders_chart_color", "top_customers_chart_color"
+        ]
+    
+        const prefixedKeys = keys.map(k => `dashboard_settings.${k}`);
+        const params = await this.orm.call("ir.config_parameter", "search_read", [[["key", "in", prefixedKeys]], ["key", "value"]])
+    
+        const get = (key, fallback) => {
+            const entry = params.find(p => p.key === `dashboard_settings.${key}`);
+            return entry?.value || fallback;
+        }
+    
+        this.state.total_sales = {
+            ...this.state.total_sales,
+            bg_color: get("total_sales_card_color", "#dc3545"),
+            text_color: get("total_sales_text_color", "#ffffff")
+        }
+    
+        this.state.total_purchases = {
+            ...this.state.total_purchases,
+            bg_color: get("total_purchases_card_color", "#17a2b8"),
+            text_color: get("total_purchases_text_color", "#ffffff")
+        }
+    
+        this.state.total_customers = {
+            ...this.state.total_customers,
+            bg_color: get("total_customers_card_color", "#6f42c1"),
+            text_color: get("total_customers_text_color", "#ffffff")
+        }
+    
+        this.state.sale_orders_today = {
+            ...this.state.sale_orders_today,
+            bg_color: get("sales_today_card_color", "#28a745"),
+            text_color: get("sales_today_text_color", "#ffffff")
+        }
+    
+        this.state.chartColors = {
+            delivery: get("delivery_chart_color", "#42c5f5"),
+            order: get("sale_orders_chart_color", "#f75b3b"),
+            plan_choice: get("top_customers_chart_color", "#ffce56")
+        }
+    }
+
+    // ********************
+    // APPLYING DATE FILTER
+    // ********************
 
     async getDateFilters() {
         const filters = await this.orm.searchRead("dashboard.date.filter", [], ["filter_name", "filter_days"]);
@@ -112,7 +174,7 @@ export class OdooDashboard extends Component {
     }
 
     // ************************
-    // TASKS MANAGEMENT SECTION
+    // TASK MANAGEMENT SECTION
     // ************************
 
     async getAllTasks(){
