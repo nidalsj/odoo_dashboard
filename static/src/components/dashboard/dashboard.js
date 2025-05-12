@@ -42,7 +42,7 @@ export class OdooDashboard extends Component {
         })
 
         onWillStart(async ()=>{
-            await loadJS("https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js");
+            await loadJS("https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js")
             await this.getDateFilters()
             await this.getActiveSessionInfo()
             await this.getAllTasks()
