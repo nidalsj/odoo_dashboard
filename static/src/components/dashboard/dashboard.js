@@ -15,6 +15,7 @@ export class OdooDashboard extends Component {
 
     setup() {
         this.orm = useService("orm");
+        this.action = useService("action");
         this.task_model = "dashboard.tasks"
         this.searchInput = useRef("search-input")
         this.state = useState({
@@ -223,6 +224,35 @@ export class OdooDashboard extends Component {
     async toggleTask(e, task){
         await this.orm.write(this.task_model, [task.id], {completed: e.target.checked})
         await this.getAllTasks()
+    }
+
+    // ************************
+    // HANDLING KPI CARD CLICKS TO OPEN RELEVANT VIEWS
+    // ************************
+
+    async viewTotalSales() {
+        console.log("Opening Total Sales View")
+    }
+
+    async viewTotalPurchases() {
+        console.log("Opening Total Purchases View")
+    }
+
+    async viewCustomers() {
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Customers',
+            res_model: 'res.partner',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: [
+                ['customer_rank', '>', 0]
+            ]
+        });
+    }
+
+    async viewSalesToday() {
+        console.log("Opening Sales Today View")
     }
 
 }
