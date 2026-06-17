@@ -4,12 +4,12 @@
     'author': 'Nidal SJ',
     'website': "https://github.com/nidalsj",
     'license': 'AGPL-3',
-    'depends': ['web','base'],
+    'depends': ['base', 'sale', 'hr', 'account'],
     'data': [
         'security/ir.model.access.csv',
-        'views/dashboard_views.xml',
-        'views/date_filter.xml',
         'views/res_config.xml',
+        'views/date_filter.xml',
+        'views/dashboard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
