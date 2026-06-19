@@ -36,7 +36,7 @@ class DashboardHandler(models.Model):
         formatted_purchases = format_amount(self.env, total_purchases, currency)
 
         # Total Customers
-        total_customers_domain = []
+        total_customers_domain = [('customer_rank', '>', 0)]
         total_customers = self.env['res.partner'].search_count(total_customers_domain)
 
         # Sales Orders Today
@@ -46,11 +46,18 @@ class DashboardHandler(models.Model):
             ('date_order', '<=', today_end),
         ])
 
+        sales_today_domain = [
+            ['create_date', '>=', today_start],
+            ['create_date', '<=', today_end],
+            ['state', '=', 'sale']
+        ]
+
         return {
             'total_sales': formatted_sales,
             'total_purchases': formatted_purchases,
             'total_customers': total_customers,
             'sales_orders_today': sale_orders_today,
+            'sales_today_domain': sales_today_domain,
         }
     
     def get_deliveries_today_chart_data(self, target_date=None):

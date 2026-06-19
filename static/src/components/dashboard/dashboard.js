@@ -151,6 +151,7 @@ export class OdooDashboard extends Component {
         this.state.total_purchases.value = kpiCardData['total_purchases']
         this.state.total_customers.value = kpiCardData['total_customers']
         this.state.sale_orders_today.value = kpiCardData['sales_orders_today']
+        this.state.salesTodayDomain = kpiCardData['sales_today_domain']
     }
 
     async getChartLoaderData(){
@@ -226,9 +227,9 @@ export class OdooDashboard extends Component {
         await this.getAllTasks()
     }
 
-    // ************************
+    // ***********************************************
     // HANDLING KPI CARD CLICKS TO OPEN RELEVANT VIEWS
-    // ************************
+    // ***********************************************
 
     async viewTotalSales() {
         console.log("Opening Total Sales View")
@@ -252,7 +253,14 @@ export class OdooDashboard extends Component {
     }
 
     async viewSalesToday() {
-        console.log("Opening Sales Today View")
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Sales Orders Today',
+            res_model: 'sale.order',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.salesTodayDomain
+        });
     }
 
 }
