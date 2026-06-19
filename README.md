@@ -19,8 +19,6 @@ A modern interactive dashboard built for Odoo 18 providing real-time business in
 - Real-time calculations
 - Dynamic filtering
 
-![KPI Cards](screenshots/kpi-cards.png)
-
 ---
 
 ### 📈 Interactive Charts
@@ -29,13 +27,9 @@ A modern interactive dashboard built for Odoo 18 providing real-time business in
 
 Users can click chart bars to open related records.
 
-![Delivery Report](screenshots/delivery-report.png)
-
 #### Monthly Sales Report
 
 Monthly sales trends with drill-down actions.
-
-![Sales Report](screenshots/monthly-sales.png)
 
 ---
 
@@ -78,17 +72,7 @@ dashboard_module/
 
 ## 📸 Screenshots
 
-### Dashboard Overview
 
-![Dashboard](screenshots/dashboard-overview.png)
-
-### Top Products Analysis
-
-![Products](screenshots/top-products.png)
-
-### Customer Analytics
-
-![Customers](screenshots/top-customers.png)
 
 ## 👨‍💻 Developer
 
