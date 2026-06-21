@@ -7,6 +7,7 @@
     'depends': ['base', 'sale', 'hr', 'account'],
     'data': [
         'security/ir.model.access.csv',
+        'data/date_filter.xml',
         'views/res_config.xml',
         'views/date_filter.xml',
         'views/dashboard_views.xml',

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="date_filter_last_7_days" model="dashboard.date.filter">
+        <field name="filter_name">Last 7 Days</field>
+        <field name="filter_days">7</field>
+    </record>
+
+    <record id="date_filter_last_15_days" model="dashboard.date.filter">
+        <field name="filter_name">Last 15 Days</field>
+        <field name="filter_days">15</field>
+    </record>
+
+    <record id="date_filter_last_30_days" model="dashboard.date.filter">
+        <field name="filter_name">Last 30 Days</field>
+        <field name="filter_days">30</field>
+    </record>
+
+    <record id="date_filter_last_90_days" model="dashboard.date.filter">
+        <field name="filter_name">Last 90 Days</field>
+        <field name="filter_days">90</field>
+    </record>
+
+    <record id="date_filter_last_year" model="dashboard.date.filter">
+        <field name="filter_name">Last 365 Days</field>
+        <field name="filter_days">365</field>
+    </record>
+
+</odoo>
