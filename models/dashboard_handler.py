@@ -17,46 +17,50 @@ class DashboardHandler(models.Model):
             'user': user,
         }
 
-    def get_dashboard_kpi_card_data(self):
+    @api.model
+    def get_dashboard_kpi_card_data(self, **kwargs):
         currency = self.env.company.currency_id
-        currency_symbol = currency.symbol
+        date_from, date_to = kwargs.get('date_from'), kwargs.get('date_to')
+
+        date_domain = []
+        if date_from:
+            date_domain += [('date_order', '>=', date_from)]
+        if date_to:
+            date_domain += [('date_order', '<=', date_to)]
+
+        # Sales
+        sales_domain = [('state','=','sale')] + date_domain
+        sales_orders = self.env['sale.order'].search(sales_domain)
+        total_sales = format_amount(self.env, sum(sales_orders.mapped('amount_total')), currency)
+
+        # Purchases
+        purchase_domain = [('state','=','purchase')] + date_domain
+        purchase_orders = self.env['purchase.order'].search(purchase_domain)
+        total_purchases = format_amount(self.env, sum(purchase_orders.mapped('amount_total')), currency)
+
+        # Customers
+        customer_ids = sales_orders.mapped('partner_id').ids
+        customers_domain = [('id','in',customer_ids)]
+        total_customers = len(set(customer_ids))
+
+        # Sales today
         today_start = datetime.combine(fields.Date.today(), datetime.min.time())
         today_end = datetime.combine(fields.Date.today(), datetime.max.time())
-
-        # Total Sales
-        sales_order_domain = [('state', '=', 'sale')]
-        sales_orders = self.env['sale.order'].search(sales_order_domain)
-        total_sales = sum(s.amount_total for s in sales_orders)
-        formatted_sales = format_amount(self.env, total_sales, currency)
-
-        # Total Purchases
-        purchase_orders_domain = [('state', '=', 'purchase')]
-        purchase_orders = self.env['purchase.order'].search(purchase_orders_domain)
-        total_purchases = sum(p.amount_total for p in purchase_orders)
-        formatted_purchases = format_amount(self.env, total_purchases, currency)
-
-        # Total Customers
-        total_customers_domain = [('customer_rank', '>', 0)]
-        total_customers = self.env['res.partner'].search_count(total_customers_domain)
-
-        # Sales Orders Today
-        sale_orders_today = self.env['sale.order'].search_count([
-            ('state', '=', 'sale'),
-            ('date_order', '>=', today_start),
-            ('date_order', '<=', today_end),
-        ])
-
         sales_today_domain = [
-            ['create_date', '>=', today_start],
-            ['create_date', '<=', today_end],
-            ['state', '=', 'sale']
+            ('state','=','sale'),
+            ('date_order','>=',fields.Datetime.to_string(today_start)),
+            ('date_order','<=',fields.Datetime.to_string(today_end)),
         ]
+        sales_orders_today = self.env['sale.order'].search_count(sales_today_domain)
 
         return {
-            'total_sales': formatted_sales,
-            'total_purchases': formatted_purchases,
+            'total_sales': total_sales,
+            'total_purchases': total_purchases,
             'total_customers': total_customers,
-            'sales_orders_today': sale_orders_today,
+            'sales_orders_today': sales_orders_today,
+            'sales_domain': sales_domain,
+            'purchase_domain': purchase_domain,
+            'customers_domain': customers_domain,
             'sales_today_domain': sales_today_domain,
         }
     
@@ -204,6 +208,7 @@ class DashboardHandler(models.Model):
 
         return format_result
     
+    @api.model
     def get_dashboard_chart_loader_data(self, target_date=None):
         """Preparing Data for all four charts"""
         target_date = target_date or date.today().strftime('%Y-%m-%d')

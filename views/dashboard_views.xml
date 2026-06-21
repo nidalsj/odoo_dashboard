@@ -24,7 +24,7 @@
 
     <menuitem
         id="dashboard_config_menu"
-        name="Settings"
+        name="Dashboard Settings"
         action="odoo_dashboard.dashboard_config_action"
         parent="odoo_dashboard.menu_odoo_dashboard"
         sequence="1"

@@ -20,6 +20,7 @@ export class OdooDashboard extends Component {
         this.searchInput = useRef("search-input")
         this.state = useState({
             period: 0,
+            date: {date_from: "", date_to: ""},
             total_sales: {value:0, bg_color: "", text_color: ""},
             total_purchases: {value:0, bg_color: "", text_color: ""},
             total_customers: {value:0, bg_color: "", text_color: ""},
@@ -131,14 +132,16 @@ export class OdooDashboard extends Component {
 
     async onChangePeriod(){
         this.getDates()
-        console.log(this.state.date)
-        // await this.getTileData()
+        await this.getKpiCardData()
         // await this.getChartRenderData()
         // await this.getTableData()
     }
 
     getDates(){
-        this.state.date = moment().subtract(this.state.period, 'days').format('YYYY-MM-DD')
+        this.state.date = {
+            date_from: moment().subtract(this.state.period, 'days').format('YYYY-MM-DD'),
+            date_to: moment().format('YYYY-MM-DD'),
+        }
     }
 
     // ************************************************
@@ -146,11 +149,19 @@ export class OdooDashboard extends Component {
     // ************************************************
 
     async getKpiCardData(){
-        const kpiCardData = await this.orm.call("dashboard.handler", "get_dashboard_kpi_card_data", [{}]);
+        const params = {
+            'date_from': this.state.date.date_from,
+            'date_to': this.state.date.date_to
+        }
+        const kpiCardData = await this.orm.call("dashboard.handler", "get_dashboard_kpi_card_data", [], params);
         this.state.total_sales.value = kpiCardData['total_sales']
         this.state.total_purchases.value = kpiCardData['total_purchases']
         this.state.total_customers.value = kpiCardData['total_customers']
         this.state.sale_orders_today.value = kpiCardData['sales_orders_today']
+
+        this.state.salesDomain = kpiCardData['sales_domain']
+        this.state.purchaseDomain = kpiCardData['purchase_domain']
+        this.state.totalCustomersDomain = kpiCardData['customers_domain']
         this.state.salesTodayDomain = kpiCardData['sales_today_domain']
     }
 
@@ -232,11 +243,25 @@ export class OdooDashboard extends Component {
     // ***********************************************
 
     async viewTotalSales() {
-        console.log("Opening Total Sales View")
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Sales Orders',
+            res_model: 'sale.order',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.salesDomain
+        });
     }
 
     async viewTotalPurchases() {
-        console.log("Opening Total Purchases View")
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Purchases Orders',
+            res_model: 'purchase.order',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.purchaseDomain
+        });
     }
 
     async viewCustomers() {
@@ -246,9 +271,7 @@ export class OdooDashboard extends Component {
             res_model: 'res.partner',
             view_mode: 'list,form',
             views: [[false, 'list'], [false, 'form']],
-            domain: [
-                ['customer_rank', '>', 0]
-            ]
+            domain: this.state.totalCustomersDomain
         });
     }
 
