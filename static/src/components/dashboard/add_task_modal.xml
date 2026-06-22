@@ -6,7 +6,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="taskModalLabel" t-esc="state.isEdit ? 'Edit Task' : 'Add New Task'"/>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" t-on-click="resetForm"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3 row">
@@ -24,7 +24,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal" t-on-click="resetForm">Close</button>
                         <button type="button" class="btn btn-dark" t-on-click="saveTask">Save</button>
                     </div>
                 </div>
