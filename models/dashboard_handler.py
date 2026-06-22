@@ -145,7 +145,6 @@ class DashboardHandler(models.Model):
         if date_to:
             domain.append(('order_id.create_date','<=',date_to))
 
-
         lines = self.env['sale.order.line'].search(domain)
         products = {}
 
@@ -170,30 +169,41 @@ class DashboardHandler(models.Model):
         }
     
 
+    @api.model
     def get_top_customers_chart_data(self, **kwargs):
-        """Returns top 5 customers and their total confirmed sales in the current year"""
-        date_today = date.today()
-        start_date = date(date_today.year, 1, 1)
-        end_date = date(date_today.year, 12, 31)
-        limit = 5
+        """Returns top 5 customers based on total amount spent in the selected period"""
+        date_from = kwargs.get('date_from')
+        date_to = kwargs.get('date_to')
+        domain = [('state','=','sale')]
 
-        query = """
-            SELECT rp.name AS customer_name, SUM(so.amount_total) AS total_sales
-            FROM sale_order so
-            JOIN res_partner rp ON so.partner_id = rp.id
-            WHERE so.state = 'sale'
-            AND so.date_order BETWEEN %s AND %s
-            GROUP BY rp.name
-            ORDER BY total_sales DESC
-            LIMIT %s
-        """
-        self.env.cr.execute(query, (start_date, end_date, limit))
-        result = self.env.cr.dictfetchall()
+        if date_from:
+            domain.append(('date_order','>=',date_from))
 
-        labels = [row['customer_name'] for row in result]
-        raw_values = [round(row['total_sales'], 2) for row in result]
+        if date_to:
+            domain.append(('date_order','<=',date_to))
 
-        return {'labels': labels, 'values': raw_values}
+        orders = self.env['sale.order'].search(domain)
+        customers = {}
+
+        for order in orders:
+            customer = order.partner_id
+            if customer.id not in customers:
+                customers[customer.id] = {
+                    'name': customer.display_name,
+                    'amount': 0,
+                    'order_ids': []
+                }
+
+            customers[customer.id]['amount'] += order.amount_total
+            customers[customer.id]['order_ids'].append(order.id)
+
+        customers = sorted(customers.values(),key=lambda x: x['amount'],reverse=True)[:5]
+
+        return {
+            'labels': [c['name'] for c in customers],
+            'values': [c['amount'] for c in customers],
+            'record_ids': {c['name']: list(set(c['order_ids']))for c in customers}
+        }
     
 
     def get_employees_with_birthdays_this_month(self):
@@ -267,6 +277,7 @@ class DashboardHandler(models.Model):
         top_customers_amounts = self.get_top_customers_chart_data(date_from=date_from, date_to=date_to)
         chart_loader_data['customers_labels'] = top_customers_amounts['labels']
         chart_loader_data['customers_values'] = top_customers_amounts['values']
+        chart_loader_data['customers_record_ids'] = top_customers_amounts['record_ids']
 
         chart_loader_data['employee_birthdays'] = self.get_employees_with_birthdays_this_month()
 

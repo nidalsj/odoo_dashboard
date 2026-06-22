@@ -115,6 +115,14 @@ export class ChartLoader extends Component {
             }
         }
 
+        // Top customers filter
+        if (this.props.title === "Top Customers") {
+            let recordIds = this.props.recordIds[label] || [];
+            if (recordIds.length) {
+                domain.push(["id","in",recordIds]);
+            }
+        }
+
         this.env.services.action.doAction({
             type: "ir.actions.act_window",
             name: this.props.title,

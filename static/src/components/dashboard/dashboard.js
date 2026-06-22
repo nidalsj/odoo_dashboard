@@ -185,6 +185,7 @@ export class OdooDashboard extends Component {
 
         this.state.topCustomersChart.labels = chartLoaderData.customers_labels
         this.state.topCustomersChart.values = chartLoaderData.customers_values
+        this.state.topCustomersChart.recordIds = chartLoaderData.customers_record_ids
     }
 
     async getTableData(){

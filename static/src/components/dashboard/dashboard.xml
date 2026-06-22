@@ -120,12 +120,14 @@
                             </div>
                             <ChartLoader 
                                 type="'bar'" 
-                                title="'Plan Choice Analysis'" 
+                                title="'Top Customers'" 
                                 axis="'y'"
                                 labels="state.topCustomersChart.labels"
                                 data="state.topCustomersChart.values"
                                 datasetLabel="'Amount'"
                                 color="'#dc3545'"
+                                model="'sale.order'"
+                                recordIds="state.topCustomersChart.recordIds"
                             />
                         </div>
                     </div>
