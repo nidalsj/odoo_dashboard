@@ -198,6 +198,54 @@ export class OdooDashboard extends Component {
         this.state.paymentsSummary = tableData.payments_summary
     }
 
+    // ***********************************************
+    // HANDLING KPI CARD CLICKS TO OPEN RELEVANT VIEWS
+    // ***********************************************
+
+    async viewTotalSales() {
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Sales Orders',
+            res_model: 'sale.order',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.salesDomain
+        });
+    }
+
+    async viewTotalPurchases() {
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Purchases Orders',
+            res_model: 'purchase.order',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.purchaseDomain
+        });
+    }
+
+    async viewCustomers() {
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Customers',
+            res_model: 'res.partner',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.totalCustomersDomain
+        });
+    }
+
+    async viewSalesToday() {
+        return this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Sales Orders Today',
+            res_model: 'sale.order',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: this.state.salesTodayDomain
+        });
+    }
+
     // ************************
     // TASK MANAGEMENT SECTION
     // ************************
@@ -248,54 +296,6 @@ export class OdooDashboard extends Component {
     async toggleTask(e, task){
         await this.orm.write(this.task_model, [task.id], {completed: e.target.checked})
         await this.getAllTasks()
-    }
-
-    // ***********************************************
-    // HANDLING KPI CARD CLICKS TO OPEN RELEVANT VIEWS
-    // ***********************************************
-
-    async viewTotalSales() {
-        return this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Sales Orders',
-            res_model: 'sale.order',
-            view_mode: 'list,form',
-            views: [[false, 'list'], [false, 'form']],
-            domain: this.state.salesDomain
-        });
-    }
-
-    async viewTotalPurchases() {
-        return this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Purchases Orders',
-            res_model: 'purchase.order',
-            view_mode: 'list,form',
-            views: [[false, 'list'], [false, 'form']],
-            domain: this.state.purchaseDomain
-        });
-    }
-
-    async viewCustomers() {
-        return this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Customers',
-            res_model: 'res.partner',
-            view_mode: 'list,form',
-            views: [[false, 'list'], [false, 'form']],
-            domain: this.state.totalCustomersDomain
-        });
-    }
-
-    async viewSalesToday() {
-        return this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Sales Orders Today',
-            res_model: 'sale.order',
-            view_mode: 'list,form',
-            views: [[false, 'list'], [false, 'form']],
-            domain: this.state.salesTodayDomain
-        });
     }
 
 }
