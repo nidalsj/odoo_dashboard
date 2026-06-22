@@ -173,6 +173,7 @@ export class OdooDashboard extends Component {
         
         this.state.saleMonthlyChart.labels = chartLoaderData.order_labels
         this.state.saleMonthlyChart.values = chartLoaderData.order_values
+        this.state.saleMonthlyChart.recordIds = chartLoaderData.order_record_ids
 
         this.state.topProductsChart.labels = chartLoaderData.products_labels
         this.state.topProductsChart.values = chartLoaderData.products_values

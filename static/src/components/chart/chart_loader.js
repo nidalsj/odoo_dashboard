@@ -99,6 +99,14 @@ export class ChartLoader extends Component {
             }
         }
 
+        // Sales by month filter
+        if (this.props.title === "Monthly Sales") {
+            let recordIds = this.props.recordIds[label] || [];
+            if (recordIds.length) {
+                domain.push(["id","in",recordIds]);
+            }
+        }
+
         this.env.services.action.doAction({
             type: "ir.actions.act_window",
             name: this.props.title,

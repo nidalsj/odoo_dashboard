@@ -17,6 +17,7 @@ class DashboardHandler(models.Model):
             'user': user,
         }
 
+
     @api.model
     def get_dashboard_kpi_card_data(self, **kwargs):
         currency = self.env.company.currency_id
@@ -64,6 +65,7 @@ class DashboardHandler(models.Model):
             'sales_today_domain': sales_today_domain,
         }
     
+
     def get_deliveries_today_chart_data(self, target_date=None):
         """Returns a grouped count of deliveries by status for today"""
         target_date = target_date or date.today().strftime('%Y-%m-%d')
@@ -83,14 +85,9 @@ class DashboardHandler(models.Model):
         }
 
         target_date = fields.Date.from_string(target_date)
-        day_start = datetime.combine(
-            target_date,
-            datetime.min.time()
-        )
-        day_end = datetime.combine(
-            target_date,
-            datetime.max.time()
-        )
+        day_start = datetime.combine(target_date,datetime.min.time())
+        day_end = datetime.combine(target_date,datetime.max.time())
+
         domain = [
             ('scheduled_date', '>=', fields.Datetime.to_string(day_start)),
             ('scheduled_date', '<=', fields.Datetime.to_string(day_end)),
@@ -102,29 +99,38 @@ class DashboardHandler(models.Model):
             'domain': domain
         }
 
+
     def get_monthly_sales_chart_data(self, target_date=None):
-        """Sale orders per month for current year"""
+        """Returns confirmed sale orders grouped by month for current year"""
         current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
-        start_date = date(current_date.year, 1, 1)
-        end_date = date(current_date.year, 12, 31)
 
-        query = """
-            SELECT COUNT(*) AS total_orders, 
-                TO_CHAR(create_date, 'Month') AS order_month
-            FROM sale_order
-            WHERE create_date BETWEEN %s AND %s
-            AND state = 'sale'
-            GROUP BY order_month
-            ORDER BY MIN(create_date);
-        """
-        self.env.cr.execute(query, (start_date, end_date))
-        result = self.env.cr.dictfetchall()
+        orders = self.env['sale.order'].search([
+            ('create_date', '>=', date(current_date.year, 1, 1)),
+            ('create_date', '<=', date(current_date.year, 12, 31)),
+            ('state', '=', 'sale')
+        ])
 
-        labels = [row['order_month'].strip() for row in result]  # strip spaces from Month names
-        values = [row['total_orders'] for row in result]
+        data = {}
 
-        return {'labels': labels, 'values': values}
+        for order in orders:
+            month_number = order.create_date.month
+            month_name = order.create_date.strftime("%B")
+
+            if month_number not in data:
+                data[month_number] = {"month": month_name,"count": 0,"ids": []}
+
+            data[month_number]["count"] += 1
+            data[month_number]["ids"].append(order.id)
+
+        data = dict(sorted(data.items()))
+
+        return {
+            'labels': [x["month"] for x in data.values()],
+            'values': [x["count"] for x in data.values()],
+            'record_ids': {x["month"]: x["ids"] for x in data.values()}
+        }
     
+
     def get_top_products_chart_data(self, target_date=None):
         """Returns top 20 products by number of confirmed sale orders"""
         current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
@@ -152,6 +158,7 @@ class DashboardHandler(models.Model):
 
         return {'labels': labels, 'values': values}
     
+
     def get_top_customers_chart_data(self, target_date=None, limit=20):
         """Returns top 20 customers and their total confirmed sales in the current year"""
         current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
@@ -179,6 +186,7 @@ class DashboardHandler(models.Model):
 
         return {'labels': labels, 'values': raw_values}
     
+
     def get_employees_with_birthdays_this_month(self):
         """Employees whose birthdays are between today and the end of this month"""
         today = date.today()
@@ -202,6 +210,7 @@ class DashboardHandler(models.Model):
 
         return result
     
+
     def get_invoice_payment_summary(self):
         query = """
             SELECT
@@ -223,6 +232,7 @@ class DashboardHandler(models.Model):
 
         return format_result
     
+    
     @api.model
     def get_dashboard_chart_loader_data(self, target_date=None):
         """Preparing Data for all four charts"""
@@ -237,6 +247,7 @@ class DashboardHandler(models.Model):
         sale_order_count = self.get_monthly_sales_chart_data(target_date)
         chart_loader_data['order_labels'] = sale_order_count['labels']
         chart_loader_data['order_values'] = sale_order_count['values']
+        chart_loader_data['order_record_ids'] = sale_order_count['record_ids']
 
         top_products_count = self.get_top_products_chart_data(target_date)
         chart_loader_data['products_labels'] = top_products_count['labels']

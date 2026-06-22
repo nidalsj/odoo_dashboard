@@ -76,12 +76,14 @@
                             </div>
                             <ChartLoader 
                                 type="'bar'" 
-                                title="'Order Report'" 
+                                title="'Monthly Sales'"
                                 axis="'x'"
                                 labels="state.saleMonthlyChart.labels"
                                 data="state.saleMonthlyChart.values"
                                 datasetLabel="'Orders'"
                                 color="'#ff752b'"
+                                model="'sale.order'"
+                                recordIds="state.saleMonthlyChart.recordIds"
                             />
                         </div>
                     </div>
