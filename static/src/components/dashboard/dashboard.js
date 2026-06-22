@@ -198,9 +198,9 @@ export class OdooDashboard extends Component {
         this.state.paymentsSummary = tableData.payments_summary
     }
 
-    // ***********************************************
-    // HANDLING KPI CARD CLICKS TO OPEN RELEVANT VIEWS
-    // ***********************************************
+    // ********************************
+    // HANDLING KPI CARD ONCLICK EVENTS
+    // ********************************
 
     async viewTotalSales() {
         return this.action.doAction({
@@ -296,6 +296,21 @@ export class OdooDashboard extends Component {
     async toggleTask(e, task){
         await this.orm.write(this.task_model, [task.id], {completed: e.target.checked})
         await this.getAllTasks()
+    }
+
+    // ******************************
+    // HANDLING TABLE ON CLICK EVENTS 
+    // ******************************
+
+    editEmployee(employeeId) {
+        this.env.services.action.doAction({
+            type: "ir.actions.act_window",
+            name: "Employee",
+            res_model: "hr.employee",
+            res_id: employeeId,
+            views: [[false, "form"]],
+            target: "current",
+        });
     }
 
 }

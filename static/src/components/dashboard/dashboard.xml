@@ -147,16 +147,16 @@
                                 </div>
                                 <div class="table-body">
                                     <t t-if="state.employeeBirthdays">
-                                        <t t-foreach="state.employeeBirthdays" t-as="birthday" t-key="birthday.id">
+                                        <t t-foreach="state.employeeBirthdays" t-as="employee" t-key="employee.id">
                                             <div class="table-row">
                                                 <div class="table-cell text-nowrap">
-                                                    <t t-esc="birthday.display_name" />
+                                                    <t t-esc="employee.display_name" />
                                                 </div>
                                                 <div class="table-cell text-nowrap">
-                                                    <t t-esc="birthday.birthday" />
+                                                    <t t-esc="employee.birthday" />
                                                 </div>
                                                 <div class="table-cell">
-                                                    <i class="fa fa-pencil" style="cursor: pointer;" />
+                                                    <i class="fa fa-pencil" style="cursor: pointer;" t-on-click="() => this.editEmployee(employee.id)" />
                                                 </div>
                                             </div>
                                         </t>
