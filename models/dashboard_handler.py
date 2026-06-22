@@ -71,7 +71,7 @@ class DashboardHandler(models.Model):
 
         query = """
             SELECT COUNT(*) AS count, state FROM stock_picking
-            WHERE DATE(date) = %s
+            WHERE DATE(scheduled_date) = %s
             GROUP BY state
         """
         self.env.cr.execute(query, (target_date,))
@@ -82,9 +82,24 @@ class DashboardHandler(models.Model):
             for item in result
         }
 
+        target_date = fields.Date.from_string(target_date)
+        day_start = datetime.combine(
+            target_date,
+            datetime.min.time()
+        )
+        day_end = datetime.combine(
+            target_date,
+            datetime.max.time()
+        )
+        domain = [
+            ('scheduled_date', '>=', fields.Datetime.to_string(day_start)),
+            ('scheduled_date', '<=', fields.Datetime.to_string(day_end)),
+        ]
+
         return {
             'labels': list(data.keys()),
-            'values': list(data.values())
+            'values': list(data.values()),
+            'domain': domain
         }
 
     def get_monthly_sales_chart_data(self, target_date=None):
@@ -217,6 +232,7 @@ class DashboardHandler(models.Model):
         delivery_status_count = self.get_deliveries_today_chart_data(target_date)
         chart_loader_data['delivery_labels'] = delivery_status_count['labels']
         chart_loader_data['delivery_values'] = delivery_status_count['values']
+        chart_loader_data['delivery_domain'] = delivery_status_count['domain']
 
         sale_order_count = self.get_monthly_sales_chart_data(target_date)
         chart_loader_data['order_labels'] = sale_order_count['labels']

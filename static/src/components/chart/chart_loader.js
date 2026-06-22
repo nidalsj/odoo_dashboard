@@ -53,6 +53,9 @@ export class ChartLoader extends Component {
                     indexAxis: this.props.axis,
                     responsive: true,
                     radius: '100%',
+                    onHover: (event, elements) => {
+                        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+                    },
                     plugins: {
                         legend: {
                             position: 'bottom',
@@ -63,10 +66,47 @@ export class ChartLoader extends Component {
                             text: this.props.title,
                             position: 'bottom',
                         }
-                    }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = this.props.labels[index];
+                            this.onChartClick(label);
+                        }
+                    },
                 },
             }
         );
+    }
+
+    onChartClick(label) {
+
+        if (!this.props.model) return;
+        let domain = [...(this.props.domain || [])];
+
+        // Delivery status filter
+        if (this.props.title === "Deliveries") {
+            const statusMap = {
+                "Draft": "draft",
+                "Waiting": "waiting",
+                "Ready": "assigned",
+                "Done": "done",
+                "Cancelled": "cancel"
+            }
+
+            if (statusMap[label]) {
+                domain.push(["state","=",statusMap[label]]);
+            }
+        }
+
+        this.env.services.action.doAction({
+            type: "ir.actions.act_window",
+            name: this.props.title,
+            res_model: this.props.model,
+            domain: domain,
+            context: {group_by: this.props.groupBy? [this.props.groupBy]: []},
+            views: [[false, "list"],[false, "form"]]
+        });
     }
 }
 

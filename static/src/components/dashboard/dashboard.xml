@@ -59,6 +59,8 @@
                                 data="state.deliveryTodayChart.values"
                                 datasetLabel="'Deliveries Today'"
                                 color="'#17a2b8'"
+                                model="'stock.picking'"
+                                domain="state.deliveryTodayChart.domain"
                             />
                         </div>
                     </div>

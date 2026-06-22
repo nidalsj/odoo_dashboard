@@ -25,7 +25,7 @@ export class OdooDashboard extends Component {
             total_purchases: {value:0, bg_color: "", text_color: ""},
             total_customers: {value:0, bg_color: "", text_color: ""},
             sale_orders_today: {value:0, bg_color: "", text_color: ""},
-            deliveryTodayChart: {labels: [], values: []},
+            deliveryTodayChart: {labels: [], values: [], domain: []},
             saleMonthlyChart: {labels: [], values: []},
             topProductsChart: {labels: [], values: []},
             topCustomersChart: {labels: [], values: []},
@@ -169,7 +169,8 @@ export class OdooDashboard extends Component {
         const chartLoaderData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
         this.state.deliveryTodayChart.labels = chartLoaderData.delivery_labels
         this.state.deliveryTodayChart.values = chartLoaderData.delivery_values
-
+        this.state.deliveryTodayChart.domain = chartLoaderData.delivery_domain
+        
         this.state.saleMonthlyChart.labels = chartLoaderData.order_labels
         this.state.saleMonthlyChart.values = chartLoaderData.order_values
 
