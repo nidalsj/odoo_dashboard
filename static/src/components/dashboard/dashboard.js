@@ -133,7 +133,7 @@ export class OdooDashboard extends Component {
     async onChangePeriod(){
         this.getDates()
         await this.getKpiCardData()
-        // await this.getChartRenderData()
+        await this.getChartLoaderData()
         // await this.getTableData()
     }
 
@@ -145,7 +145,7 @@ export class OdooDashboard extends Component {
     }
 
     // ************************************************
-    // FETCHING VALUES FOR KPI CARDS, CHARTS AND TABLES
+    // FETCHING DATA FOR KPI CARDS, CHARTS AND TABLES
     // ************************************************
 
     async getKpiCardData(){
@@ -166,7 +166,11 @@ export class OdooDashboard extends Component {
     }
 
     async getChartLoaderData(){
-        const chartLoaderData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
+        const params = {
+            'date_from': this.state.date.date_from,
+            'date_to': this.state.date.date_to
+        }
+        const chartLoaderData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [], params);
         this.state.deliveryTodayChart.labels = chartLoaderData.delivery_labels
         this.state.deliveryTodayChart.values = chartLoaderData.delivery_values
         this.state.deliveryTodayChart.domain = chartLoaderData.delivery_domain
@@ -177,13 +181,18 @@ export class OdooDashboard extends Component {
 
         this.state.topProductsChart.labels = chartLoaderData.products_labels
         this.state.topProductsChart.values = chartLoaderData.products_values
+        this.state.topProductsChart.recordIds = chartLoaderData.products_record_ids
 
         this.state.topCustomersChart.labels = chartLoaderData.customers_labels
         this.state.topCustomersChart.values = chartLoaderData.customers_values
     }
 
     async getTableData(){
-        const tableData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [{}]);
+        const params = {
+            'date_from': this.state.date.date_from,
+            'date_to': this.state.date.date_to
+        }
+        const tableData = await this.orm.call("dashboard.handler", "get_dashboard_chart_loader_data", [], params);
         this.state.employeeBirthdays = tableData.employee_birthdays
         this.state.paymentsSummary = tableData.payments_summary
     }

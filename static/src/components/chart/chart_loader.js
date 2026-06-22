@@ -107,6 +107,14 @@ export class ChartLoader extends Component {
             }
         }
 
+        // Top products filter
+        if (this.props.title === "Top Products") {
+            let recordIds = this.props.recordIds[label] || [];
+            if (recordIds.length) {
+                domain.push(["id","in",recordIds]);
+            }
+        }
+
         this.env.services.action.doAction({
             type: "ir.actions.act_window",
             name: this.props.title,

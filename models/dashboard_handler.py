@@ -20,6 +20,7 @@ class DashboardHandler(models.Model):
 
     @api.model
     def get_dashboard_kpi_card_data(self, **kwargs):
+        """Returns data for all 4 KPI cards based on the selected period"""
         currency = self.env.company.currency_id
         date_from, date_to = kwargs.get('date_from'), kwargs.get('date_to')
 
@@ -66,9 +67,9 @@ class DashboardHandler(models.Model):
         }
     
 
-    def get_deliveries_today_chart_data(self, target_date=None):
-        """Returns a grouped count of deliveries by status for today"""
-        target_date = target_date or date.today().strftime('%Y-%m-%d')
+    def get_deliveries_today_chart_data(self):
+        """Returns a grouped count of deliveries by status for CURRENT DAY ONLY!"""
+        date_today = date.today().strftime('%Y-%m-%d')
         status_mapping = dict(self.env["stock.picking"]._fields["state"].selection)
 
         query = """
@@ -76,7 +77,7 @@ class DashboardHandler(models.Model):
             WHERE DATE(scheduled_date) = %s
             GROUP BY state
         """
-        self.env.cr.execute(query, (target_date,))
+        self.env.cr.execute(query, (date_today,))
         result = self.env.cr.dictfetchall()
 
         data = {
@@ -84,9 +85,9 @@ class DashboardHandler(models.Model):
             for item in result
         }
 
-        target_date = fields.Date.from_string(target_date)
-        day_start = datetime.combine(target_date,datetime.min.time())
-        day_end = datetime.combine(target_date,datetime.max.time())
+        date_today = fields.Date.from_string(date_today)
+        day_start = datetime.combine(date_today,datetime.min.time())
+        day_end = datetime.combine(date_today,datetime.max.time())
 
         domain = [
             ('scheduled_date', '>=', fields.Datetime.to_string(day_start)),
@@ -100,13 +101,13 @@ class DashboardHandler(models.Model):
         }
 
 
-    def get_monthly_sales_chart_data(self, target_date=None):
-        """Returns confirmed sale orders grouped by month for current year"""
-        current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
+    def get_monthly_sales_chart_data(self):
+        """Returns confirmed sale orders grouped by month for CURRENT YEAR ONLY!"""
+        date_today = date.today()
 
         orders = self.env['sale.order'].search([
-            ('create_date', '>=', date(current_date.year, 1, 1)),
-            ('create_date', '<=', date(current_date.year, 12, 31)),
+            ('create_date', '>=', date(date_today.year, 1, 1)),
+            ('create_date', '<=', date(date_today.year, 12, 31)),
             ('state', '=', 'sale')
         ])
 
@@ -131,42 +132,50 @@ class DashboardHandler(models.Model):
         }
     
 
-    def get_top_products_chart_data(self, target_date=None):
-        """Returns top 20 products by number of confirmed sale orders"""
-        current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
-        start_date = date(current_date.year, 1, 1)
-        end_date = date(current_date.year, 12, 31)
+    @api.model
+    def get_top_products_chart_data(self, **kwargs):
+        """Returns top 10 products based on quantity sold in the selected period"""
+        date_from = kwargs.get('date_from')
+        date_to = kwargs.get('date_to')
+        domain = [('order_id.state','=','sale')]
 
-        query = """
-            SELECT pt.name AS product_name, COUNT(so.id) AS sale_count
-            FROM sale_order_line sol
-            JOIN sale_order so ON sol.order_id = so.id
-            JOIN product_product pp ON sol.product_id = pp.id
-            JOIN product_template pt ON pp.product_tmpl_id = pt.id
-            WHERE so.state = 'sale'
-            AND so.create_date BETWEEN %s AND %s
-            GROUP BY pt.name
-            ORDER BY sale_count DESC
-            LIMIT 20
-        """
-        self.env.cr.execute(query, (start_date, end_date))
-        result = self.env.cr.dictfetchall()
-        user_lang = self.env.user.lang or 'en_US'
+        if date_from:
+            domain.append(('order_id.create_date','>=',date_from))
 
-        labels = [row['product_name'].get(user_lang, '') for row in result]
-        values = [row['sale_count'] for row in result]
+        if date_to:
+            domain.append(('order_id.create_date','<=',date_to))
 
-        return {'labels': labels, 'values': values}
+
+        lines = self.env['sale.order.line'].search(domain)
+        products = {}
+
+        for line in lines:
+
+            if line.product_id.id not in products:
+                products[line.product_id.id] = {
+                    'name': line.product_id.display_name,
+                    'amount': 0,
+                    'order_ids': []
+                }
+
+            products[line.product_id.id]['amount'] += line.price_subtotal
+            products[line.product_id.id]['order_ids'].append(line.order_id.id)
+
+        products = sorted(products.values(),key=lambda x: x['amount'],reverse=True)[:10]
+
+        return {
+            'labels': [p['name'] for p in products],
+            'values': [p['amount'] for p in products],
+            'record_ids': {p['name']: list(set(p['order_ids']))for p in products}
+        }
     
 
-    def get_top_customers_chart_data(self, target_date=None, limit=20):
-        """Returns top 20 customers and their total confirmed sales in the current year"""
-        current_date = datetime.strptime(target_date, '%Y-%m-%d') if target_date else date.today()
-        start_date = date(current_date.year, 1, 1)
-        end_date = date(current_date.year, 12, 31)
-
-        user_lang = self.env.user.lang or 'en_US'
-        user_currency = self.env.user.company_id.currency_id
+    def get_top_customers_chart_data(self, **kwargs):
+        """Returns top 5 customers and their total confirmed sales in the current year"""
+        date_today = date.today()
+        start_date = date(date_today.year, 1, 1)
+        end_date = date(date_today.year, 12, 31)
+        limit = 5
 
         query = """
             SELECT rp.name AS customer_name, SUM(so.amount_total) AS total_sales
@@ -232,28 +241,30 @@ class DashboardHandler(models.Model):
 
         return format_result
     
-    
+
     @api.model
-    def get_dashboard_chart_loader_data(self, target_date=None):
-        """Preparing Data for all four charts"""
-        target_date = target_date or date.today().strftime('%Y-%m-%d')
+    def get_dashboard_chart_loader_data(self, **kwargs):
+        """Fetching data for all charts and tables in one go to minimize RPC calls. Date filters are applied where needed"""
+        date_from = kwargs.get('date_from')
+        date_to = kwargs.get('date_to')
         chart_loader_data = {}
 
-        delivery_status_count = self.get_deliveries_today_chart_data(target_date)
+        delivery_status_count = self.get_deliveries_today_chart_data()
         chart_loader_data['delivery_labels'] = delivery_status_count['labels']
         chart_loader_data['delivery_values'] = delivery_status_count['values']
         chart_loader_data['delivery_domain'] = delivery_status_count['domain']
 
-        sale_order_count = self.get_monthly_sales_chart_data(target_date)
+        sale_order_count = self.get_monthly_sales_chart_data()
         chart_loader_data['order_labels'] = sale_order_count['labels']
         chart_loader_data['order_values'] = sale_order_count['values']
         chart_loader_data['order_record_ids'] = sale_order_count['record_ids']
 
-        top_products_count = self.get_top_products_chart_data(target_date)
+        top_products_count = self.get_top_products_chart_data(date_from=date_from, date_to=date_to)
         chart_loader_data['products_labels'] = top_products_count['labels']
         chart_loader_data['products_values'] = top_products_count['values']
+        chart_loader_data['products_record_ids'] = top_products_count['record_ids']
 
-        top_customers_amounts = self.get_top_customers_chart_data(target_date)
+        top_customers_amounts = self.get_top_customers_chart_data(date_from=date_from, date_to=date_to)
         chart_loader_data['customers_labels'] = top_customers_amounts['labels']
         chart_loader_data['customers_values'] = top_customers_amounts['values']
 

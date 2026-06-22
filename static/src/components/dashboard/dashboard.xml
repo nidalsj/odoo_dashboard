@@ -99,10 +99,12 @@
                             </div>
                             <ChartLoader 
                                 type="'doughnut'" 
-                                title="'Package'"
+                                title="'Top Products'"
                                 labels="state.topProductsChart.labels"
                                 data="state.topProductsChart.values"
-                                datasetLabel="'Orders'"
+                                datasetLabel="'Amount'"
+                                model="'sale.order'"
+                                recordIds="state.topProductsChart.recordIds"
                             />
                         </div>
                     </div>
