@@ -136,7 +136,7 @@ Displays:
 # 👉 Architecture
 
 ```text
-dashboard_module/
+odoo_dashboard/
 ├── models/
 ├── views/
 ├── static/
