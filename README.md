@@ -216,7 +216,9 @@ Feel free to fork this project and adapt it for your own Odoo implementations.
 
 # 👉 Screenshots
 
-
+<img width="1769" height="889" alt="Image" src="https://github.com/user-attachments/assets/2a2e0cb3-c9d7-4890-9ed4-416c1c7ab426" />
+<img width="1920" height="964" alt="Image" src="https://github.com/user-attachments/assets/5506c2ec-d969-483d-81af-66995f1c41f7" />
+<img width="1920" height="964" alt="Image" src="https://github.com/user-attachments/assets/4393b898-99bc-4b27-9088-930647148bed" />
 
 ---
 
