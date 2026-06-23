@@ -36,7 +36,6 @@ export class OdooDashboard extends Component {
             },
             employeeBirthdays: [],
             paymentsSummary: [],
-            stockReport: [],
             task:{name:"", completed:false},
             taskList:[],
             isEdit: false,

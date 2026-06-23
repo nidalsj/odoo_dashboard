@@ -215,36 +215,6 @@
                         <t t-call="odoo_dashboard.add_task_modal"/>
                     </div>
                     <div class="col-lg-6 m-0 p-0">
-                        <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 550px;">
-                            <div class="m-3">
-                                <h3>Low Stock / Re-Order Alerts</h3>
-                            </div>
-                            <div class="table-container">
-                                <div class="table-header">
-                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Display Name</div>
-                                    <div class="table-cell text-nowrap" style="font-weight: bold;">Rating</div>
-                                    <div class="table-cell" style="width: 40px;"></div>
-                                </div>
-                                <div class="table-body">
-                                    <div class="table-row">
-                                        <div class="table-cell text-nowrap">
-                                            name
-                                        </div>
-                                        <div class="table-cell text-nowrap">
-                                            value
-                                        </div>
-                                        <div class="table-cell">
-                                            <i 
-                                                class="fa fa-pencil" 
-                                                style="cursor: pointer;" 
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 m-0 p-0">
                         <div class="shadow-sm border m-2 p-4 bg-white" style="min-height: 300px;">
                             <div class="m-3">
                                 <h3>Invoice Payment Summary (All Companies)</h3>
