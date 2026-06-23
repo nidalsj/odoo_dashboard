@@ -134,7 +134,7 @@ export class OdooDashboard extends Component {
         this.getDates()
         await this.getKpiCardData()
         await this.getChartLoaderData()
-        // await this.getTableData()
+        await this.getTableData()
     }
 
     getDates(){

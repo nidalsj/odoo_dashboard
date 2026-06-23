@@ -230,26 +230,38 @@ class DashboardHandler(models.Model):
         return result
     
 
-    def get_invoice_payment_summary(self):
-        query = """
+    def get_invoice_payment_summary(self, date_from=None, date_to=None):
+        date_domain = ""
+        params = []
+
+        if date_from:
+            date_domain += " AND invoice_date >= %s"
+            params.append(date_from)
+
+        if date_to:
+            date_domain += " AND invoice_date <= %s"
+            params.append(date_to)
+
+        query = f"""
             SELECT
                 COALESCE(SUM(amount_total), 0.0) AS total_invoiced,
                 COALESCE(SUM(amount_total - amount_residual), 0.0) AS total_paid,
                 COALESCE(SUM(amount_residual), 0.0) AS total_pending
             FROM account_move
-            WHERE move_type = 'out_invoice' AND state = 'posted';
+            WHERE move_type = 'out_invoice'
+            AND state = 'posted'
+            {date_domain}
         """
-        self.env.cr.execute(query)
+
+        self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchone()
         currency = self.env.company.currency_id.symbol
 
-        format_result = {
+        return {
             "total_invoiced": f"{currency} {result['total_invoiced']:.2f}",
             "total_paid": f"{currency} {result['total_paid']:.2f}",
             "total_pending": f"{currency} {result['total_pending']:.2f}",
         }
-
-        return format_result
     
 
     @api.model
@@ -281,7 +293,7 @@ class DashboardHandler(models.Model):
 
         chart_loader_data['employee_birthdays'] = self.get_employees_with_birthdays_this_month()
 
-        payments_summary_data = self.get_invoice_payment_summary()
+        payments_summary_data = self.get_invoice_payment_summary(date_from=date_from, date_to=date_to)
         chart_loader_data['payments_summary'] = payments_summary_data
 
         return chart_loader_data
