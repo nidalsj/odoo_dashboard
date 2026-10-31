@@ -1,8 +1,7 @@
 /** @odoo-module **/
-import {registry} from "@web/core/registry";
-const { Component } = owl
+import { Component } from "@odoo/owl";
 
-
-export class KpiCard extends Component {}
-
-KpiCard.template = "odoo_dashboard.KpiCard"
+export class KpiCard extends Component {
+    static template = "odoo_dashboard.KpiCard";
+    static props = ["name", "icon", "value", "color"];
+}

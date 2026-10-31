@@ -3,7 +3,7 @@
 
     <!-- Dashboard Owl Action -->
     <record id="odoo_dashboard_action" model="ir.actions.client">
-        <field name="name">ODOO Dashboard</field>
+        <field name="name">Odoo Dashboard</field>
         <field name="tag">odoo_dashboard</field>
     </record>
 
@@ -18,14 +18,6 @@
         id="dashboard_date_filters_menu"
         name="Customize Date Filter"
         action="odoo_dashboard.dashboard_date_filter_action"
-        parent="odoo_dashboard.menu_odoo_dashboard"
-        sequence="1"
-    />
-
-    <menuitem
-        id="dashboard_config_menu"
-        name="Dashboard Settings"
-        action="odoo_dashboard.dashboard_config_action"
         parent="odoo_dashboard.menu_odoo_dashboard"
         sequence="1"
     />

@@ -1,213 +1,142 @@
-from odoo import models, fields, api, _
-from odoo.tools import date_utils
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
+import pytz
+from dateutil.relativedelta import relativedelta
+from odoo import api, fields, models
 from odoo.tools import format_amount
-from odoo.http import request
 
 
 class DashboardHandler(models.Model):
     _name = "dashboard.handler"
     _description = "Prepare Data for Dashboard"
 
-    # Function to pass active session info without inheriting ir.http model
-    def get_active_session_info(self):
-        user = request.env.user.name
+    def _get_dates(self, period=None):
+        if period is None:
+            return None, None
+        today = fields.Date.context_today(self)
+        return today - timedelta(days=period), today
 
-        return {
-            'user': user,
-        }
+    def _date_domain(self, field_name, date_from=None, date_to=None):
+        tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        domain = []
+        if date_from:
+            start = tz.localize(datetime.combine(date_from, time.min)).astimezone(pytz.utc)
+            domain.append((field_name, '>=', fields.Datetime.to_string(start)))
+        if date_to:
+            end = tz.localize(datetime.combine(date_to, time.max)).astimezone(pytz.utc)
+            domain.append((field_name, '<=', fields.Datetime.to_string(end)))
+        return domain
 
+    # CARDS DATA
 
     @api.model
-    def get_dashboard_kpi_card_data(self, **kwargs):
-        """Returns data for all 4 KPI cards based on the selected period"""
+    def get_dashboard_kpi_card_data(self, period=None):
         currency = self.env.company.currency_id
-        date_from, date_to = kwargs.get('date_from'), kwargs.get('date_to')
+        date_from, date_to = self._get_dates(period)
+        today = fields.Date.context_today(self)
 
-        date_domain = []
-        if date_from:
-            date_domain += [('date_order', '>=', date_from)]
-        if date_to:
-            date_domain += [('date_order', '<=', date_to)]
-
-        # Sales
-        sales_domain = [('state','=','sale')] + date_domain
+        sales_domain = [('state', '=', 'sale')] + self._date_domain('date_order', date_from, date_to)
         sales_orders = self.env['sale.order'].search(sales_domain)
-        total_sales = format_amount(self.env, sum(sales_orders.mapped('amount_total')), currency)
 
-        # Purchases
-        purchase_domain = [('state','=','purchase')] + date_domain
+        purchase_domain = [('state', '=', 'purchase')] + self._date_domain('date_order', date_from, date_to)
         purchase_orders = self.env['purchase.order'].search(purchase_domain)
-        total_purchases = format_amount(self.env, sum(purchase_orders.mapped('amount_total')), currency)
 
-        # Customers
-        customer_ids = sales_orders.mapped('partner_id').ids
-        customers_domain = [('id','in',customer_ids)]
-        total_customers = len(set(customer_ids))
+        customers = sales_orders.partner_id
 
-        # Sales today
-        today_start = datetime.combine(fields.Date.today(), datetime.min.time())
-        today_end = datetime.combine(fields.Date.today(), datetime.max.time())
-        sales_today_domain = [
-            ('state','=','sale'),
-            ('date_order','>=',fields.Datetime.to_string(today_start)),
-            ('date_order','<=',fields.Datetime.to_string(today_end)),
+        sales_today_domain = [('state', '=', 'sale')] + self._date_domain('date_order', today, today)
+
+        return {
+            'total_sales': {
+                'value': format_amount(self.env, sum(sales_orders.mapped('amount_total')), currency),
+                'domain': sales_domain,
+            },
+            'total_purchases': {
+                'value': format_amount(self.env, sum(purchase_orders.mapped('amount_total')), currency),
+                'domain': purchase_domain,
+            },
+            'total_customers': {
+                'value': len(customers),
+                'domain': [('id', 'in', customers.ids)],
+            },
+            'sales_today': {
+                'value': self.env['sale.order'].search_count(sales_today_domain),
+                'domain': sales_today_domain,
+            },
+        }
+
+    # CHARTS DATA
+
+    def _get_deliveries_today_chart_data(self):
+        Picking = self.env['stock.picking']
+        today = fields.Date.context_today(self)
+        domain = self._date_domain('scheduled_date', today, today)
+
+        counts = dict(Picking._read_group(domain, ['state'], ['__count']))
+        statuses = [
+            (state, label) for state, label in Picking._fields['state']._description_selection(self.env)
+            if counts.get(state)
         ]
-        sales_orders_today = self.env['sale.order'].search_count(sales_today_domain)
-
         return {
-            'total_sales': total_sales,
-            'total_purchases': total_purchases,
-            'total_customers': total_customers,
-            'sales_orders_today': sales_orders_today,
-            'sales_domain': sales_domain,
-            'purchase_domain': purchase_domain,
-            'customers_domain': customers_domain,
-            'sales_today_domain': sales_today_domain,
-        }
-    
-
-    def get_deliveries_today_chart_data(self):
-        """Returns a grouped count of deliveries by status for CURRENT DAY ONLY!"""
-        date_today = date.today().strftime('%Y-%m-%d')
-        status_mapping = dict(self.env["stock.picking"]._fields["state"].selection)
-
-        query = """
-            SELECT COUNT(*) AS count, state FROM stock_picking
-            WHERE DATE(scheduled_date) = %s
-            GROUP BY state
-        """
-        self.env.cr.execute(query, (date_today,))
-        result = self.env.cr.dictfetchall()
-
-        data = {
-            status_mapping.get(item["state"], item["state"]): item["count"]
-            for item in result
+            'labels': [label for state, label in statuses],
+            'values': [counts[state] for state, label in statuses],
+            'domains': [domain + [('state', '=', state)] for state, label in statuses],
         }
 
-        date_today = fields.Date.from_string(date_today)
-        day_start = datetime.combine(date_today,datetime.min.time())
-        day_end = datetime.combine(date_today,datetime.max.time())
+    def _get_monthly_sales_chart_data(self, period=None):
+        today = fields.Date.context_today(self)
+        date_from, date_to = self._get_dates(period)
+        date_from = date_from or today.replace(month=1, day=1)
+        date_to = date_to or today
+        label_format = '%b' if date_from.year == date_to.year else '%b %Y'
 
-        domain = [
-            ('scheduled_date', '>=', fields.Datetime.to_string(day_start)),
-            ('scheduled_date', '<=', fields.Datetime.to_string(day_end)),
+        labels, values, domains = [], [], []
+        month_start = date_from.replace(day=1)
+        while month_start <= date_to:
+            month_end = month_start + relativedelta(months=1, days=-1)
+            domain = [('state', '=', 'sale')] + self._date_domain(
+                'date_order', max(month_start, date_from), min(month_end, date_to))
+            labels.append(month_start.strftime(label_format))
+            values.append(self.env['sale.order'].search_count(domain))
+            domains.append(domain)
+            month_start += relativedelta(months=1)
+
+        return {'labels': labels, 'values': values, 'domains': domains}
+
+    def _get_top_products_chart_data(self, date_from=None, date_to=None):
+        order_domain = [('state', '=', 'sale')] + self._date_domain('date_order', date_from, date_to)
+        line_domain = [('product_id', '!=', False)] + [
+            ('order_id.' + leaf[0], leaf[1], leaf[2]) for leaf in order_domain
         ]
-
+        groups = self.env['sale.order.line']._read_group(
+            line_domain, ['product_id'], ['price_subtotal:sum'], order='price_subtotal:sum desc', limit=10)
         return {
-            'labels': list(data.keys()),
-            'values': list(data.values()),
-            'domain': domain
+            'labels': [product.display_name for product, amount in groups],
+            'values': [amount for product, amount in groups],
+            'domains': [order_domain + [('order_line.product_id', '=', product.id)] for product, amount in groups],
         }
 
-
-    def get_monthly_sales_chart_data(self):
-        """Returns confirmed sale orders grouped by month for CURRENT YEAR ONLY!"""
-        date_today = date.today()
-
-        orders = self.env['sale.order'].search([
-            ('create_date', '>=', date(date_today.year, 1, 1)),
-            ('create_date', '<=', date(date_today.year, 12, 31)),
-            ('state', '=', 'sale')
-        ])
-
-        data = {}
-
-        for order in orders:
-            month_number = order.create_date.month
-            month_name = order.create_date.strftime("%B")
-
-            if month_number not in data:
-                data[month_number] = {"month": month_name,"count": 0,"ids": []}
-
-            data[month_number]["count"] += 1
-            data[month_number]["ids"].append(order.id)
-
-        data = dict(sorted(data.items()))
-
+    def _get_top_customers_chart_data(self, date_from=None, date_to=None):
+        order_domain = [('state', '=', 'sale')] + self._date_domain('date_order', date_from, date_to)
+        groups = self.env['sale.order']._read_group(
+            order_domain, ['partner_id'], ['amount_total:sum'], order='amount_total:sum desc', limit=5)
         return {
-            'labels': [x["month"] for x in data.values()],
-            'values': [x["count"] for x in data.values()],
-            'record_ids': {x["month"]: x["ids"] for x in data.values()}
+            'labels': [partner.display_name for partner, amount in groups],
+            'values': [amount for partner, amount in groups],
+            'domains': [order_domain + [('partner_id', '=', partner.id)] for partner, amount in groups],
         }
-    
 
     @api.model
-    def get_top_products_chart_data(self, **kwargs):
-        """Returns top 10 products based on quantity sold in the selected period"""
-        date_from = kwargs.get('date_from')
-        date_to = kwargs.get('date_to')
-        domain = [('order_id.state','=','sale')]
-
-        if date_from:
-            domain.append(('order_id.create_date','>=',date_from))
-
-        if date_to:
-            domain.append(('order_id.create_date','<=',date_to))
-
-        lines = self.env['sale.order.line'].search(domain)
-        products = {}
-
-        for line in lines:
-
-            if line.product_id.id not in products:
-                products[line.product_id.id] = {
-                    'name': line.product_id.display_name,
-                    'amount': 0,
-                    'order_ids': []
-                }
-
-            products[line.product_id.id]['amount'] += line.price_subtotal
-            products[line.product_id.id]['order_ids'].append(line.order_id.id)
-
-        products = sorted(products.values(),key=lambda x: x['amount'],reverse=True)[:10]
-
+    def get_dashboard_chart_loader_data(self, period=None):
+        date_from, date_to = self._get_dates(period)
         return {
-            'labels': [p['name'] for p in products],
-            'values': [p['amount'] for p in products],
-            'record_ids': {p['name']: list(set(p['order_ids']))for p in products}
+            'delivery': self._get_deliveries_today_chart_data(),
+            'monthly_sales': self._get_monthly_sales_chart_data(period),
+            'top_products': self._get_top_products_chart_data(date_from, date_to),
+            'top_customers': self._get_top_customers_chart_data(date_from, date_to),
         }
-    
 
-    @api.model
-    def get_top_customers_chart_data(self, **kwargs):
-        """Returns top 5 customers based on total amount spent in the selected period"""
-        date_from = kwargs.get('date_from')
-        date_to = kwargs.get('date_to')
-        domain = [('state','=','sale')]
-
-        if date_from:
-            domain.append(('date_order','>=',date_from))
-
-        if date_to:
-            domain.append(('date_order','<=',date_to))
-
-        orders = self.env['sale.order'].search(domain)
-        customers = {}
-
-        for order in orders:
-            customer = order.partner_id
-            if customer.id not in customers:
-                customers[customer.id] = {
-                    'name': customer.display_name,
-                    'amount': 0,
-                    'order_ids': []
-                }
-
-            customers[customer.id]['amount'] += order.amount_total
-            customers[customer.id]['order_ids'].append(order.id)
-
-        customers = sorted(customers.values(),key=lambda x: x['amount'],reverse=True)[:5]
-
-        return {
-            'labels': [c['name'] for c in customers],
-            'values': [c['amount'] for c in customers],
-            'record_ids': {c['name']: list(set(c['order_ids']))for c in customers}
-        }
-    
+    # TABLES DATA
 
     def get_employees_with_birthdays_this_month(self):
-        """Employees whose birthdays are between today and the end of this month"""
         today = date.today()
         current_month = today.strftime('%m')
         current_day = today.strftime('%d')
@@ -262,39 +191,11 @@ class DashboardHandler(models.Model):
             "total_paid": f"{currency} {result['total_paid']:.2f}",
             "total_pending": f"{currency} {result['total_pending']:.2f}",
         }
-    
 
     @api.model
-    def get_dashboard_chart_loader_data(self, **kwargs):
-        """Fetching data for all charts and tables in one go to minimize RPC calls. Date filters are applied where needed"""
-        date_from = kwargs.get('date_from')
-        date_to = kwargs.get('date_to')
-        chart_loader_data = {}
-
-        delivery_status_count = self.get_deliveries_today_chart_data()
-        chart_loader_data['delivery_labels'] = delivery_status_count['labels']
-        chart_loader_data['delivery_values'] = delivery_status_count['values']
-        chart_loader_data['delivery_domain'] = delivery_status_count['domain']
-
-        sale_order_count = self.get_monthly_sales_chart_data()
-        chart_loader_data['order_labels'] = sale_order_count['labels']
-        chart_loader_data['order_values'] = sale_order_count['values']
-        chart_loader_data['order_record_ids'] = sale_order_count['record_ids']
-
-        top_products_count = self.get_top_products_chart_data(date_from=date_from, date_to=date_to)
-        chart_loader_data['products_labels'] = top_products_count['labels']
-        chart_loader_data['products_values'] = top_products_count['values']
-        chart_loader_data['products_record_ids'] = top_products_count['record_ids']
-
-        top_customers_amounts = self.get_top_customers_chart_data(date_from=date_from, date_to=date_to)
-        chart_loader_data['customers_labels'] = top_customers_amounts['labels']
-        chart_loader_data['customers_values'] = top_customers_amounts['values']
-        chart_loader_data['customers_record_ids'] = top_customers_amounts['record_ids']
-
-        chart_loader_data['employee_birthdays'] = self.get_employees_with_birthdays_this_month()
-
-        payments_summary_data = self.get_invoice_payment_summary(date_from=date_from, date_to=date_to)
-        chart_loader_data['payments_summary'] = payments_summary_data
-
-        return chart_loader_data
-    
+    def get_dashboard_table_data(self, period=None):
+        date_from, date_to = self._get_dates(period)
+        return {
+            'employee_birthdays': self.get_employees_with_birthdays_this_month(),
+            'payments_summary': self.get_invoice_payment_summary(date_from=date_from, date_to=date_to),
+        }

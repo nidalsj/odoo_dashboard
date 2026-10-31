@@ -8,7 +8,7 @@
                     <div class="col m-0 p-0">
                         <div class="shadow-sm border p-4 bg-white">
                             <div class="d-flex align-items-center justify-content-between p-1">
-                                <h1 class="text-dark fw-bold">Welcome <span class="text-muted"><t t-esc="state.user"/></span> 👋</h1>
+                                <h1 class="text-dark fw-bold">Welcome <span class="text-muted"><t t-esc="userName"/></span> 👋</h1>
                                 <div>
                                     <!-- DATE FILTER -->
                                     <Dropdown>
@@ -33,10 +33,10 @@
                 <!-- KPI CARDS SECTION -->
                 <div class="col m-0 p-0">
                     <div class="row m-2">
-                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.total_sales.value" bg_color="state.total_sales.bg_color" text_color="state.total_sales.text_color" t-on-click="() => this.viewTotalSales()"/>
-                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.total_purchases.value" bg_color="state.total_purchases.bg_color" text_color="state.total_purchases.text_color" t-on-click="() => this.viewTotalPurchases()"/>
-                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.total_customers.value" bg_color="state.total_customers.bg_color" text_color="state.total_customers.text_color" t-on-click="() => this.viewCustomers()"/>
-                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.sale_orders_today.value" bg_color="state.sale_orders_today.bg_color" text_color="state.sale_orders_today.text_color" t-on-click="() => this.viewSalesToday()"/>
+                        <KpiCard name="'Total Sales'" icon="'fa fa-shopping-cart'" value="state.kpis.total_sales.value" color="'#28a745'" t-on-click="() => this.viewRecords('Sales Orders', 'sale.order', state.kpis.total_sales.domain)"/>
+                        <KpiCard name="'Total Purchases'" icon="'fa fa-credit-card'" value="state.kpis.total_purchases.value" color="'#dc3545'" t-on-click="() => this.viewRecords('Purchase Orders', 'purchase.order', state.kpis.total_purchases.domain)"/>
+                        <KpiCard name="'Customers'" icon="'fa fa-handshake-o'" value="state.kpis.total_customers.value" color="'#6f42c1'" t-on-click="() => this.viewRecords('Customers', 'res.partner', state.kpis.total_customers.domain)"/>
+                        <KpiCard name="'Sales Today'" icon="'fa fa-line-chart'" value="state.kpis.sales_today.value" color="'#17a2b8'" t-on-click="() => this.viewRecords('Sales Orders Today', 'sale.order', state.kpis.sales_today.domain)"/>
                     </div>
                 </div>
                 <!-- CHARTS SECTION -->
@@ -45,22 +45,22 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Deliveries Today</h3>
-                                <t t-if="!state.deliveryTodayChart.values.length">
+                                <t t-if="!state.charts.delivery.values.length">
                                     <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
                                         <i class="fa fa-info-circle me-2" />No records available
                                     </span>
                                 </t>
                             </div>
-                            <ChartLoader 
-                                type="'bar'" 
-                                title="'Deliveries'" 
+                            <ChartLoader
+                                type="'bar'"
+                                title="'Deliveries'"
                                 axis="'y'"
-                                labels="state.deliveryTodayChart.labels"
-                                data="state.deliveryTodayChart.values"
+                                labels="state.charts.delivery.labels"
+                                data="state.charts.delivery.values"
+                                domains="state.charts.delivery.domains"
                                 datasetLabel="'Deliveries Today'"
-                                color="'#17a2b8'"
                                 model="'stock.picking'"
-                                domain="state.deliveryTodayChart.domain"
+                                color="'#5ab5fa'"
                             />
                         </div>
                     </div>
@@ -68,22 +68,22 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Monthly Sale Order Report</h3>
-                                <t t-if="!state.saleMonthlyChart.values.length">
+                                <t t-if="!state.charts.monthly_sales.values.length">
                                     <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
                                         <i class="fa fa-info-circle me-2" />No records available
                                     </span>
                                 </t>
                             </div>
-                            <ChartLoader 
-                                type="'bar'" 
+                            <ChartLoader
+                                type="'bar'"
                                 title="'Monthly Sales'"
                                 axis="'x'"
-                                labels="state.saleMonthlyChart.labels"
-                                data="state.saleMonthlyChart.values"
+                                labels="state.charts.monthly_sales.labels"
+                                data="state.charts.monthly_sales.values"
+                                domains="state.charts.monthly_sales.domains"
                                 datasetLabel="'Orders'"
-                                color="'#ff752b'"
                                 model="'sale.order'"
-                                recordIds="state.saleMonthlyChart.recordIds"
+                                color="'#f97316'"
                             />
                         </div>
                     </div>
@@ -91,20 +91,20 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Top Products</h3>
-                                <t t-if="!state.topProductsChart.values.length">
+                                <t t-if="!state.charts.top_products.values.length">
                                     <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
                                         <i class="fa fa-info-circle me-2" />No records available
                                     </span>
                                 </t>
                             </div>
-                            <ChartLoader 
-                                type="'doughnut'" 
+                            <ChartLoader
+                                type="'doughnut'"
                                 title="'Top Products'"
-                                labels="state.topProductsChart.labels"
-                                data="state.topProductsChart.values"
+                                labels="state.charts.top_products.labels"
+                                data="state.charts.top_products.values"
+                                domains="state.charts.top_products.domains"
                                 datasetLabel="'Amount'"
                                 model="'sale.order'"
-                                recordIds="state.topProductsChart.recordIds"
                             />
                         </div>
                     </div>
@@ -112,22 +112,22 @@
                         <div class="shadow-sm border m-2 p-4 bg-white" style="max-height: 550px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h3 class="text-dark fw-bold">Top Customers</h3>
-                                <t t-if="!state.topCustomersChart.values.length">
+                                <t t-if="!state.charts.top_customers.values.length">
                                     <span class="text-danger ms-2" style="font-size: 1rem; font-weight: bolder;">
                                         <i class="fa fa-info-circle me-2" />No records available
                                     </span>
                                 </t>
                             </div>
-                            <ChartLoader 
-                                type="'bar'" 
-                                title="'Top Customers'" 
+                            <ChartLoader
+                                type="'bar'"
+                                title="'Top Customers'"
                                 axis="'y'"
-                                labels="state.topCustomersChart.labels"
-                                data="state.topCustomersChart.values"
+                                labels="state.charts.top_customers.labels"
+                                data="state.charts.top_customers.values"
+                                domains="state.charts.top_customers.domains"
                                 datasetLabel="'Amount'"
-                                color="'#dc3545'"
                                 model="'sale.order'"
-                                recordIds="state.topCustomersChart.recordIds"
+                                color="'#ef4444'"
                             />
                         </div>
                     </div>
