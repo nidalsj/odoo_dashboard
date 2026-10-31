@@ -2,15 +2,15 @@
 
 A modern and interactive business intelligence dashboard built for **Odoo 18** to provide real-time insights into sales, purchases, customers, inventory, and business operations.
 
-Built using **OWL, Python, PostgreSQL, and Chart.js**, this dashboard provides dynamic analytics, customizable UI components, date-based filtering, and interactive drill-down capabilities.
+Built using **OWL, Python, PostgreSQL, and Chart.js**, this dashboard provides dynamic analytics, date-based filtering, and interactive drill-down capabilities.
 
-Users can customize dashboard views, apply date filters, and open related Odoo records directly from KPI cards and charts.
+Users can apply date filters and open related Odoo records directly from KPI cards and charts.
 
 ---
 
 # Features
 
-# 👉 KPI Cards
+# ➜ KPI Cards
 
 Quick business overview with real-time calculations and clickable drill-down actions.
 
@@ -28,7 +28,7 @@ Shows today's confirmed sales orders with direct access to today's sales records
 
 ---
 
-# 👉 Interactive Charts
+# ➜ Interactive Charts
 
 ## Delivery Status Analysis
 
@@ -36,8 +36,9 @@ Displays today's delivery operations grouped by delivery status.
 
 Includes:
 
-- Ready
+- Draft
 - Waiting
+- Ready
 - Done
 - Cancelled
 
@@ -47,12 +48,13 @@ Clicking a status opens the related delivery records.
 
 ## Monthly Sales Order Report
 
-Year-based sales performance tracking.
+Year based sales performance tracking.
 
 Features:
 
-- Starts from January of the current year
-- Updates automatically until the current month
+- Without a date filter: January of the current year until the current month
+- With a date filter: every month covered by the selected period
+- Months without orders are shown with 0
 - Monthly order comparison
 - Clickable months for detailed sales records
 
@@ -60,7 +62,7 @@ Features:
 
 ## Top Products
 
-Displays products with the highest sales performance.
+Displays the top 10 products by sales amount.
 
 Features:
 
@@ -72,7 +74,7 @@ Features:
 
 ## Top Customers
 
-Shows customers with the highest purchase value during the selected period.
+Shows the top 5 customers by purchase value during the selected period.
 
 Useful for:
 
@@ -82,7 +84,7 @@ Useful for:
 
 ---
 
-# 👉 Reports & Productivity Widgets
+# ➜ Reports & Productivity Widgets
 
 ## Employee Birthday Widget
 
@@ -117,91 +119,16 @@ Displays:
 - Total invoiced amount
 - Paid amount
 - Pending amount
-
+- 
 ---
 
-# 👉 Technical Stack
-
-<p>
-<img src="https://img.shields.io/badge/Odoo-18-purple"/>
-<img src="https://img.shields.io/badge/Python-blue"/>
-<img src="https://img.shields.io/badge/PostgreSQL-336791"/>
-<img src="https://img.shields.io/badge/JavaScript-yellow"/>
-<img src="https://img.shields.io/badge/OWL-red"/>
-<img src="https://img.shields.io/badge/Chart.js-orange"/>
-</p>
-
----
-
-# 👉 Architecture
-
-```text
-odoo_dashboard/
-├── models/
-├── views/
-├── static/
-│   ├── src/js/
-│   ├── src/xml/
-│   └── src/css/
-├── security/
-└── __manifest__.py
-```
-
-
----
-
-# 👉 Key Highlights
-
-- Dynamic date range filtering
-- Customizable dashboard colors
-- OWL-based interactive UI
-- Chart.js visual analytics
-- Clickable drill-down reports
-- ORM and SQL reporting
-- Sales analytics
-- Customer analytics
-- Inventory insights
-- Multi-company invoice summary
-- Productivity widgets
-
----
-
-# 👉 Installation
-
-Clone this repository into your Odoo custom addons directory:
-
-```bash
-git clone https://github.com/nidalsj/odoo_dashboard.git
-```
-
-Move into your Odoo project directory:
-
-```bash
-cd odoo
-```
-
-Restart Odoo server and update the module:
-
-```bash
-./odoo-bin -c odoo.conf -u odoo_dashboard
-```
-
-or from Odoo UI:
-
-```
-Apps → Update Apps List → Install Odoo 18 Business Dashboard
-```
-
----
-
-# 👉 Customization
+# ➜ Customization
 
 This dashboard is designed to be extended and customized according to business requirements.
 
 You can customize:
 
 - KPI cards
-- Dashboard colors
 - Date filter options
 - Charts and analytics
 - Business reports
@@ -214,15 +141,14 @@ Feel free to fork this project and adapt it for your own Odoo implementations.
 
 ---
 
-# 👉 Screenshots
+# ➜ Screenshots
 
-<img width="1769" height="889" alt="Image" src="https://github.com/user-attachments/assets/2a2e0cb3-c9d7-4890-9ed4-416c1c7ab426" />
-<img width="1920" height="964" alt="Image" src="https://github.com/user-attachments/assets/5506c2ec-d969-483d-81af-66995f1c41f7" />
-<img width="1920" height="964" alt="Image" src="https://github.com/user-attachments/assets/4393b898-99bc-4b27-9088-930647148bed" />
+<img width="1770" height="888" alt="Image" src="https://github.com/user-attachments/assets/4ef5fa4d-4477-4bb2-ba5e-e5e82c9b9ff0" />
+<img width="1920" height="963" alt="Image" src="https://github.com/user-attachments/assets/e019f453-50a0-422f-a84b-c4c9c83ad6c3" />
 
 ---
 
-# 👨‍💻 Developer
+# ➜ Developer
 
 **Nidal SJ**
 
